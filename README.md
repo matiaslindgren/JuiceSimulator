@@ -14,3 +14,9 @@ Gameplay
 * antiglue and superglue reacts with each other and on contact, both dissolve quickly into a mixture with very low viscosity that evaporates quickly
 
 
+TODO
+====
+1. Create level with horizontal pipe
+2. Add fluid moving inside the pipe
+3. Create counter for counting what percentage of the fluid particles initialized at the start reaches the other side
+4. Test counter with leak
