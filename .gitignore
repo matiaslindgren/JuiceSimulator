@@ -18,3 +18,5 @@ lib
 *.out
 *.fdb_latexmk
 *.fls
+
+.syntastic_cpp_config
