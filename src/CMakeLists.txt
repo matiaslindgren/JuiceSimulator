@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(Game)
 set(Game_VERSION_MAJOR 0)
 set(Game_VERSION_MINOR 1)
-set(EXECUTABLE_NAME "game")
+set(EXECUTABLE_NAME "game.exe")
 
 set(SOURCES
   Main.cpp

@@ -1,6 +1,7 @@
 *.out
-*.o
-*.exe
+**/*.o
+**/*.a
+**/*.exe
 *.sw[op]
 .ycm_extra_conf.py
 *.zip
@@ -18,6 +19,7 @@ lib
 *.out
 *.fdb_latexmk
 *.fls
+media
 
 .syntastic_cpp_config
 
