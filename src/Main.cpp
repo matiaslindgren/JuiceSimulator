@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "Grid.hpp"
+#include "DebugDraw.hpp"
 #include "World.hpp"
 #include "StateManager.hpp"
 
@@ -31,14 +32,24 @@ void print_pos(const float& x, const float& y) {
 int main() {
   StateManager state_manager;
   sf::ContextSettings settings;
-  World world(2.0f, 10.0f);
+  World world(0.0f, 10.0f);
 
   settings.antialiasingLevel = antialiasinglevel;
   sf::RenderWindow window(sf::VideoMode(window_width, window_height), "title todo", sf::Style::Default, settings);
   window.setFramerateLimit(fps);
 
+  DebugDraw debug_draw(window);
+	uint32 flags = 0;
+	flags += b2Draw::e_shapeBit;
+	flags += b2Draw::e_particleBit;
+	flags += b2Draw::e_jointBit;
+	flags += b2Draw::e_aabbBit;
+	flags += b2Draw::e_centerOfMassBit;
+	debug_draw.SetFlags(flags);
+  world.SetDebugDraw(&debug_draw);
+
   sf::View view = window.getDefaultView();
-  view.setCenter(5-0.1, 5-0.1);
+  view.setCenter(5-0.5, 5-0.5);
   view.setSize(10, 10);
   window.setView(view);
 
@@ -117,6 +128,7 @@ int main() {
         i++;
       }
 
+      world.DrawDebugData();
       window.display();
       ready = false;
   }

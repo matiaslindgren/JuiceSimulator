@@ -14,6 +14,7 @@ set(SOURCES
   Polygon.cpp
   TextBox.cpp
   Grid.cpp
+  DebugDraw.cpp
 )
 
 include_directories (
