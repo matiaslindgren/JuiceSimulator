@@ -28,7 +28,7 @@ void print_pos(const float& x, const float& y) {
 int main() {
   StateManager state_manager;
   sf::ContextSettings settings;
-  World world(0.0f, 1.0f);
+  World world(2.0f, 10.0f);
 
   settings.antialiasingLevel = 4;
   sf::RenderWindow window(sf::VideoMode(width, height), "title todo", sf::Style::Default, settings);
@@ -72,19 +72,20 @@ int main() {
           } else if (event.type == sf::Event::KeyPressed)
           {
             sf::View view = window.getView();
+            const float& offset = view.getSize().x/10.0f;
             switch(event.key.code)
             {
               case sf::Keyboard::Up:
-                view.move(0.0f, -10.0f);
+                view.move(0.0f, -offset);
                 break;
               case sf::Keyboard::Left:
-                view.move(-10.0f, 0.0f);
+                view.move(-offset, 0.0f);
                 break;
               case sf::Keyboard::Down:
-                view.move(0.0f, 10.0f);
+                view.move(0.0f, offset);
                 break;
               case sf::Keyboard::Right:
-                view.move(10.0f, 0.0f);
+                view.move(offset, 0.0f);
                 break;
               default:
                 break;
