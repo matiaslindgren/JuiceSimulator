@@ -6,8 +6,11 @@
 #include "World.hpp"
 #include "StateManager.hpp"
 
-constexpr auto width = 900;
-constexpr auto height = 600;
+
+constexpr auto window_width = 900;
+constexpr auto window_height = 600;
+constexpr auto fps = 60;
+constexpr auto antialiasinglevel = 4;
 constexpr auto timeStep = 1.0f / 60.0f;
 constexpr auto velocityIterations = 6;
 constexpr auto positionIterations = 2;
@@ -30,9 +33,9 @@ int main() {
   sf::ContextSettings settings;
   World world(2.0f, 10.0f);
 
-  settings.antialiasingLevel = 4;
-  sf::RenderWindow window(sf::VideoMode(width, height), "title todo", sf::Style::Default, settings);
-  window.setFramerateLimit(10);
+  settings.antialiasingLevel = antialiasinglevel;
+  sf::RenderWindow window(sf::VideoMode(window_width, window_height), "title todo", sf::Style::Default, settings);
+  window.setFramerateLimit(fps);
 
   sf::View view = window.getDefaultView();
   view.setCenter(5-0.1, 5-0.1);
