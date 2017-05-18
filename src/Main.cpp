@@ -39,46 +39,31 @@ void print_pos(const float& x, const float& y) {
   std::cout << n << ": " << x << ", " << y << std::endl;
 }
 
-static constexpr auto width = 800;
-static constexpr auto height = 600;
-
-void draw_axes(sf::RenderWindow& window) {
-  sf::Vertex y[2];
-  y[0] = sf::Vertex(sf::Vector2f(0, -10));
-  y[1] = sf::Vertex(sf::Vector2f(0, 10));
-  y[0].color = sf::Color::Black;
-  y[1].color = sf::Color::Black;
-  sf::Vertex x[2];
-  x[0] = sf::Vertex(sf::Vector2f(-10, 0));
-  x[1] = sf::Vertex(sf::Vector2f(10, 0));
-  x[0].color = sf::Color::Black;
-  x[1].color = sf::Color::Black;
-  window.draw(y, 2, sf::Lines);
-  window.draw(x, 2, sf::Lines);
-}
 
 int main() {
   StateManager state_manager;
   sf::ContextSettings settings;
-  World world(0.0f, -10.0f);
-
-	constexpr auto timeStep = 1.0f / 60.0f;
-	constexpr auto velocityIterations = 6;
-	constexpr auto positionIterations = 2;
-  constexpr auto view_size = 4.0f;
+  World world(0.0f, 1.0f);
 
   settings.antialiasingLevel = 4;
   sf::RenderWindow window(sf::VideoMode(width, height), "title todo", sf::Style::Default, settings);
-  window.setFramerateLimit(1);
+  window.setFramerateLimit(10);
 
   sf::View view = window.getDefaultView();
-  view.setCenter(view_size/2.2f, view_size/2.2f);
-  view.setSize(view_size, -view_size);
+  view.move(-10, -10);
   window.setView(view);
 
-  sf::Texture texture;
-  texture.loadFromFile("wood.jpg");
-  world.CreateShape(texture, 1.0f, sf::FloatRect(1.0f, 3.0f, 1.0f, 1.0f));
+  Axes axes;
+
+  sf::Texture wood;
+  if (!wood.loadFromFile("media/img/wood.jpg"))
+    return EXIT_FAILURE;
+  sf::Texture pulp;
+  if (!pulp.loadFromFile("media/img/pulp-fiction.jpg"))
+    return EXIT_FAILURE;
+  world.CreateShape(pulp, 1.0f, sf::FloatRect(1.0f, 6.0f, 1.0f, 1.0f), b2_dynamicBody);
+  world.CreateShape(wood, 1.0f, sf::FloatRect(10.0f, 10.0f, 20.0f, 1.f), b2_staticBody);
+
   state_manager.push_state(StateName(menu));
 
   cs(state_manager, world);
@@ -133,19 +118,22 @@ int main() {
       window.clear(sf::Color::White);
 
       world.TimeStep(timeStep, velocityIterations, positionIterations);
+      int i = 1;
       for (auto shape : world.getShapeList())
       {
-        std::cout << shape << std::endl;
+        /* std::cout << i << ": " << shape.getB2Position().x << ", " << shape.getB2Position().y << std::endl; */
         window.draw(shape);
+        i++;
       }
 
-      draw_axes(window);
+      window.draw(axes);
+
       window.display();
       ready = false;
   }
   state_manager.pop_state();
   cs(state_manager, world);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
