@@ -12,6 +12,8 @@ set(SOURCES
   Main.cpp
   World.cpp
   Shape.cpp
+  TextBox.cpp
+  Axes.cpp
 )
 
 include_directories (
