@@ -11,7 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(SOURCES
   Main.cpp
   World.cpp
-  Shape.cpp
+  Polygon.cpp
   TextBox.cpp
   Grid.cpp
 )

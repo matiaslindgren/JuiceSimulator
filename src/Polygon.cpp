@@ -1,4 +1,4 @@
-#include "Shape.hpp"
+#include "Polygon.hpp"
 
 
 Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyType body_type)

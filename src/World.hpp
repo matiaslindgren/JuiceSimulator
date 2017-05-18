@@ -4,7 +4,7 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "Shape.hpp"
+#include "Polygon.hpp"
 
 
 class World : public b2World
