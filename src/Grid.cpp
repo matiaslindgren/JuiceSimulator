@@ -1,5 +1,4 @@
 #include "Grid.hpp"
-#include "Main.hpp"
 
 
 Grid::Grid(const float& top, const float& left,
@@ -21,7 +20,7 @@ Grid::Grid(const float& top, const float& left,
 
 void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-  states.transform *= getTransform() * SCALE_WORLD;
+  states.transform *= getTransform();
   target.draw(lines, states);
 }
 

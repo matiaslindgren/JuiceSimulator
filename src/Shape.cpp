@@ -1,7 +1,7 @@
 #include "Shape.hpp"
 
 
-Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect)
+Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyType body_type)
   : m_texture(texture),
     m_vertices(sf::VertexArray(sf::Quads, 4))
 {
@@ -20,22 +20,22 @@ Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect)
   for (std::size_t i = 0; i < vertex_count; i++)
   {
     const sf::Vector2f& position = m_vertices[i].position;
-    b2_vertices[i].Set(position.x, position.y);
+    b2_vertices[i].Set(position.x, -position.y);
   }
   m_shape.Set(b2_vertices, vertex_count);
 
   m_body_def.userData = this;
-  m_body_def.type = b2_dynamicBody;
+  m_body_def.type = body_type;
+  m_body_def.position = b2_vertices[0];
+
 };
 
 void Polygon::applyPhysics()
 {
   const b2Vec2& b2_body_pos = m_body->GetPosition();
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    m_vertices[i].position.x += b2_body_pos.x;
-    m_vertices[i].position.y += b2_body_pos.y;
-  }
+  const float& new_x = b2_body_pos.x;
+  const float& new_y = -b2_body_pos.y;
+  this->setPosition(new_x, new_y);
 }
 
 std::ostream& operator<<(std::ostream& os, const Polygon& polygon)
@@ -48,7 +48,9 @@ std::ostream& operator<<(std::ostream& os, const Polygon& polygon)
 
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-  /* states.texture = &m_texture; */
+  states.transform *= getTransform();
+  states.texture = &m_texture;
   // states.shader can be updated here
   target.draw(m_vertices, states);
 }
+

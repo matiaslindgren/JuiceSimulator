@@ -2,24 +2,9 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "Main.hpp"
 #include "Grid.hpp"
 #include "World.hpp"
 #include "StateManager.hpp"
-
-constexpr auto world_scale_x = 100.0f;
-constexpr auto world_scale_y = 100.0f;
-
-const sf::Transform SCALE_WORLD(
-    world_scale_x, 0, 0,
-    0, world_scale_y, 0,
-    0, 0, 1
-);
-const sf::Transform FLIP_Y(
-    0, 0, 0,
-    0, -1, 0,
-    0, 0, 1
-);
 
 constexpr auto width = 900;
 constexpr auto height = 600;
@@ -50,7 +35,8 @@ int main() {
   window.setFramerateLimit(10);
 
   sf::View view = window.getDefaultView();
-  view.move(-10, -10);
+  view.setCenter(5-0.1, 5-0.1);
+  view.setSize(10, 10);
   window.setView(view);
 
   Grid grid;
@@ -61,8 +47,8 @@ int main() {
   sf::Texture pulp;
   if (!pulp.loadFromFile("media/img/pulp-fiction.jpg"))
     return EXIT_FAILURE;
-  world.CreateShape(pulp, 1.0f, sf::FloatRect(1.0f, 6.0f, 1.0f, 1.0f), b2_dynamicBody);
-  world.CreateShape(wood, 1.0f, sf::FloatRect(10.0f, 10.0f, 20.0f, 1.f), b2_staticBody);
+  world.CreateShape(pulp, 1.0f, sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f), b2_dynamicBody);
+  world.CreateShape(wood, 1.0f, sf::FloatRect(0.0f, 3.0f, 5.0f, 1.0f), b2_staticBody);
 
   state_manager.push_state(StateName(menu));
 
@@ -116,6 +102,7 @@ int main() {
       }
 
       window.clear(sf::Color::White);
+      window.draw(grid);
 
       world.TimeStep(timeStep, velocityIterations, positionIterations);
       int i = 1;
@@ -125,8 +112,6 @@ int main() {
         window.draw(shape);
         i++;
       }
-
-      window.draw(grid);
 
       window.display();
       ready = false;

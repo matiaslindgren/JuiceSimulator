@@ -3,13 +3,14 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "TextBox.hpp"
 
 
 #include <iostream>
-class Polygon : public sf::Drawable
+class Polygon : public sf::Drawable, public sf::Transformable
 {
   public:
-    Polygon(const sf::Texture&, const sf::FloatRect&);
+    Polygon(const sf::Texture&, const sf::FloatRect&, b2BodyType body_type);
 
     const b2BodyDef* getB2BodyDefinition() const
     {
@@ -26,11 +27,6 @@ class Polygon : public sf::Drawable
       m_body = body;
     }
 
-    const sf::Vector2f& getPosition() const
-    {
-      return m_vertices[0].position;
-    }
-
     void applyPhysics();
 
     // TODO temp, debug
@@ -44,8 +40,6 @@ class Polygon : public sf::Drawable
   private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    static constexpr auto shape_scale_x = 1.0f;
-    static constexpr auto shape_scale_y = -1.0f;
     static constexpr auto vertex_count = 4;
 
     b2PolygonShape m_shape;
@@ -53,6 +47,8 @@ class Polygon : public sf::Drawable
     b2Body* m_body;
     const sf::Texture& m_texture;
     sf::VertexArray m_vertices;
+    TextBox m_text_box;
 };
+
 
 #endif // POLYGON.HPP

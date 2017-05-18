@@ -21,7 +21,7 @@ void TextBox::updatePosition(const float& x, const float& y)
   std::stringstream ss;
   ss << x << ", " << std::setprecision(2) << y;
   text.setString(ss.str());
-  text.setPosition(x, y+0.3);
+  text.setPosition(x, y);
   box.setPosition(x, y);
 }
 
