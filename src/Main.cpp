@@ -2,8 +2,30 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "StateManager.hpp"
+#include "Main.hpp"
+#include "Axes.hpp"
 #include "World.hpp"
+#include "StateManager.hpp"
+
+constexpr auto world_scale_x = 100.0f;
+constexpr auto world_scale_y = 100.0f;
+
+const sf::Transform SCALE_WORLD(
+    world_scale_x, 0, 0,
+    0, world_scale_y, 0,
+    0, 0, 1
+);
+const sf::Transform FLIP_Y(
+    0, 0, 0,
+    0, -1, 0,
+    0, 0, 1
+);
+
+constexpr auto width = 900;
+constexpr auto height = 600;
+constexpr auto timeStep = 1.0f / 60.0f;
+constexpr auto velocityIterations = 6;
+constexpr auto positionIterations = 2;
 
 
 void cs(const StateManager& sm, const World& w) {
