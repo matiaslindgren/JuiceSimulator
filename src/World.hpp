@@ -10,9 +10,9 @@
 class World : public b2World
 {
   public:
-    World(const float& x, const float& y) : b2World(b2Vec2(x, y)) {};
+    World(const float& x, const float& y) : b2World(b2Vec2(x, -y)) {};
 
-    Polygon& CreateShape(const sf::Texture&, float, const sf::FloatRect&);
+    Polygon& CreateShape(const sf::Texture&, float, const sf::FloatRect&, b2BodyType body_type);
 
     void TimeStep(const float&, const int&, const int&, const int& = 1);
 

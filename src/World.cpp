@@ -5,10 +5,10 @@
 #include "World.hpp"
 
 
-Polygon& World::CreateShape(const sf::Texture& texture, float density, const sf::FloatRect& rect)
+Polygon& World::CreateShape(const sf::Texture& texture, float density, const sf::FloatRect& rect, b2BodyType body_type)
 {
-  sfml_shapes.emplace_back(texture, rect);
-  Polygon& added = sfml_shapes.front();
+  sfml_shapes.emplace_back(texture, rect, body_type);
+  Polygon& added = sfml_shapes.back();
   b2Body* body = this->CreateBody(added.getB2BodyDefinition());
   body->CreateFixture(added.getB2Polygon(), density);
   added.setB2Body(body);
