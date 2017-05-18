@@ -1,23 +1,27 @@
-#include "Axes.hpp"
+#include "Grid.hpp"
 #include "Main.hpp"
 
 
-Axes::Axes() : m_y_axis(sf::Lines, 2), m_x_axis(sf::Lines, 2)
+Grid::Grid(const float& top, const float& left,
+           const float& length, const float& offset)
+  : lines(sf::Lines)
 {
-  m_y_axis[0].position = sf::Vector2f(0, -1);
-  m_y_axis[1].position = sf::Vector2f(0, 10);
-  m_x_axis[0].position = sf::Vector2f(-1, 0);
-  m_x_axis[1].position = sf::Vector2f(10, 0);
-  m_y_axis[0].color = sf::Color::Black;
-  m_y_axis[1].color = sf::Color::Black;
-  m_x_axis[0].color = sf::Color::Black;
-  m_x_axis[1].color = sf::Color::Black;
+  for (auto delta = 0.0f; delta < length; delta += offset)
+  {
+    sf::Vertex y_top(sf::Vector2f(delta, top), sf::Color::Black);
+    sf::Vertex y_bottom(sf::Vector2f(delta, top + length), sf::Color::Black);
+    sf::Vertex x_left(sf::Vector2f(left, delta), sf::Color::Black);
+    sf::Vertex x_right(sf::Vector2f(left + length, delta), sf::Color::Black);
+    lines.append(y_top);
+    lines.append(y_bottom);
+    lines.append(x_left);
+    lines.append(x_right);
+  }
 }
 
-void Axes::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   states.transform *= getTransform() * SCALE_WORLD;
-  target.draw(m_y_axis, states);
-  target.draw(m_x_axis, states);
+  target.draw(lines);
 }
 

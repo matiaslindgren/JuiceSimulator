@@ -1,17 +1,19 @@
-#ifndef AXES_HPP
-#define AXES_HPP
+#ifndef GRID_HPP
+#define GRID_HPP
 #include <SFML/Graphics.hpp>
 
 
-class Axes : public sf::Drawable, public sf::Transformable
+class Grid : public sf::Drawable, public sf::Transformable
 {
   public:
-    Axes();
+    Grid(const float& = -1.0f,
+         const float& = -1.0f,
+         const float& = 10.0f,
+         const float& offset = 1.0f);
   private:
     virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
-    sf::VertexArray m_y_axis;
-    sf::VertexArray m_x_axis;
+    sf::VertexArray lines;
 };
 
 
-#endif // AXES.HPP
+#endif // GRID.HPP
