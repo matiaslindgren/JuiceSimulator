@@ -17,9 +17,9 @@ class Polygon : public sf::Drawable, public sf::Transformable
       return &m_body_def;
     }
 
-    const b2PolygonShape* getB2Polygon() const
+    const b2FixtureDef* getB2FixtureDefinition() const
     {
-      return &m_shape;
+      return &m_fixture_def;
     }
 
     void setB2Body(b2Body* body)
@@ -42,8 +42,9 @@ class Polygon : public sf::Drawable, public sf::Transformable
 
     static constexpr auto vertex_count = 4;
 
-    b2PolygonShape m_shape;
     b2BodyDef m_body_def;
+    b2PolygonShape m_shape;
+    b2FixtureDef m_fixture_def;
     b2Body* m_body;
     const sf::Texture& m_texture;
     sf::VertexArray m_vertices;

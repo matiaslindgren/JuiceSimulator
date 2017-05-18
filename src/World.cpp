@@ -10,7 +10,7 @@ Polygon& World::CreateShape(const sf::Texture& texture, float density, const sf:
   sfml_shapes.emplace_back(texture, rect, body_type);
   Polygon& added = sfml_shapes.back();
   b2Body* body = this->CreateBody(added.getB2BodyDefinition());
-  body->CreateFixture(added.getB2Polygon(), density);
+  body->CreateFixture(added.getB2FixtureDefinition());
   added.setB2Body(body);
   return added;
 }

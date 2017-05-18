@@ -28,6 +28,10 @@ Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyTy
   m_body_def.type = body_type;
   m_body_def.position = b2_vertices[0];
 
+  m_fixture_def.shape = &m_shape;
+  m_fixture_def.density = 10.0f;
+  m_fixture_def.restitution = 0.4f;
+
 };
 
 void Polygon::applyPhysics()
