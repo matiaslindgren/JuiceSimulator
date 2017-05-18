@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "Main.hpp"
-#include "Axes.hpp"
+#include "Grid.hpp"
 #include "World.hpp"
 #include "StateManager.hpp"
 
@@ -53,7 +53,7 @@ int main() {
   view.move(-10, -10);
   window.setView(view);
 
-  Axes axes;
+  Grid grid;
 
   sf::Texture wood;
   if (!wood.loadFromFile("media/img/wood.jpg"))
@@ -126,7 +126,7 @@ int main() {
         i++;
       }
 
-      window.draw(axes);
+      window.draw(grid);
 
       window.display();
       ready = false;

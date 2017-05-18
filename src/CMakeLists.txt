@@ -13,7 +13,7 @@ set(SOURCES
   World.cpp
   Shape.cpp
   TextBox.cpp
-  Axes.cpp
+  Grid.cpp
 )
 
 include_directories (
