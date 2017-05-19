@@ -1,4 +1,3 @@
-#include <list>
 #include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
@@ -25,6 +24,7 @@ void World::TimeStep(const float& timeStep, const int& velocityIterations, const
   {
     shape.applyPhysics();
   }
+
 }
 
 void World::SetDebugDraw(DebugDraw* debugDraw)

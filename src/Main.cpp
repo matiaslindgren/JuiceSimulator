@@ -1,12 +1,10 @@
 #include <iostream>
-#include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <tclap/CmdLine.h>
 #include "Grid.hpp"
 #include "DebugDraw.hpp"
 #include "World.hpp"
-#include "StateManager.hpp"
 
 
 constexpr auto window_width = 900;
@@ -18,18 +16,8 @@ constexpr auto antialiasinglevel = 4;
 constexpr auto timeStep = 1.0f / 60.0f;
 constexpr auto velocityIterations = 6;
 constexpr auto positionIterations = 2;
+constexpr auto particleIterations = 2;
 
-
-void cs(const StateManager& sm, const World& w) {
-  std::cout << (sm.has_state() ? sm.active_state_name() : "no state") << std::endl;
-  std::cout << "World contains " << w.getShapeCount() << " shapes" << std::endl;
-}
-
-static int n = 0;
-void print_pos(const float& x, const float& y) {
-  n++;
-  std::cout << n << ": " << x << ", " << y << std::endl;
-}
 
 void handleEvents(sf::RenderWindow& window)
 {
@@ -102,7 +90,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  StateManager state_manager;
   World world(0.0f, 10.0f);
 
   sf::RenderWindow window;
@@ -166,9 +153,6 @@ int main(int argc, char** argv) {
     world.CreateShape(corners, b2_staticBody);
   }
 
-  state_manager.push_state(StateName(menu));
-  cs(state_manager, world);
-
   while (window.isOpen())
   {
     handleEvents(window);
@@ -184,9 +168,6 @@ int main(int argc, char** argv) {
 
     window.display();
   }
-
-  state_manager.pop_state();
-  cs(state_manager, world);
 
   return EXIT_SUCCESS;
 }

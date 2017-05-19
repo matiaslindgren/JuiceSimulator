@@ -1,10 +1,7 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#include <list>
-#include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "Polygon.hpp"
 #include "DebugDraw.hpp"
 
 

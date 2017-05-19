@@ -37,7 +37,7 @@ void Polygon::applyPhysics()
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   states.transform *= getTransform();
-  // states.shader can be updated here
+  states.texture = nullptr;
   target.draw(m_vertices, states);
 }
 
