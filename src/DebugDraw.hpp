@@ -29,7 +29,7 @@
 class DebugDraw : public b2Draw
 {
   public:
-    DebugDraw(sf::RenderWindow& window) : m_window(window), b2Draw() {};
+    explicit DebugDraw(sf::RenderWindow& window) : m_window(window) {};
 
     void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
 
