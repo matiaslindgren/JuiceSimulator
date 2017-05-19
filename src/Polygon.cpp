@@ -19,17 +19,11 @@ Polygon::Polygon(sf::Vector2f* corners, b2BodyType body_type)
 
   m_body_def.userData = this;
   m_body_def.type = body_type;
-  /* m_body_def.position = b2_vertices[0]; */
 
   m_fixture_def.shape = &m_shape;
   m_fixture_def.density = 0.1f;
   m_fixture_def.restitution = 0.4f;
   m_fixture_def.friction = 0.7f;
-
-  /* m_vertices[0].color = sf::Color::Red; */
-  /* m_vertices[1].color = sf::Color::Green; */
-  /* m_vertices[2].color = sf::Color::Blue; */
-  /* m_vertices[3].color = sf::Color::Black; */
 
 };
 
@@ -39,14 +33,6 @@ void Polygon::applyPhysics()
   sf::Transformable::setPosition(convertVector(b2_transform.p));
   sf::Transformable::setRotation(radiansToAngle(b2_transform.q.GetAngle()));
 }
-
-std::ostream& operator<<(std::ostream& os, const Polygon& polygon)
-{
-  const sf::Vector2f& sfml_pos = polygon.getPosition();
-  sf::Vector2f b2_pos = polygon.getB2Position();
-  return os << "sfml: " << sfml_pos.x << ", " << sfml_pos.y << " | b2: " << b2_pos.x << ", " << b2_pos.y;
-};
-
 
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
