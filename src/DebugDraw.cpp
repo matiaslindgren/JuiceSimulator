@@ -91,19 +91,19 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 {
   std::cout << "called DrawTransform" << std::endl;
 
-	constexpr float k_axisScale = 1.4f;
+  constexpr float k_axisScale = 1.4f;
   const sf::Vector2f& p1 = b2Vec2_to_sfml(xf.p);
   sf::Vector2f p2;
 
   sf::VertexArray line(sf::Lines, 4);
   line[0] = p1;
   line[0].color = sf::Color(1, 0, 0);
-	p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetXAxis());
+  p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetXAxis());
   line[1] = p2;
   line[1].color = sf::Color(1, 0, 0);
   line[2] = p1;
   line[2].color = sf::Color(0, 1, 0);
-	p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetYAxis());
+  p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetYAxis());
   line[3] = p2;
   line[3].color = sf::Color(0, 1, 0);
   m_window.draw(line);
@@ -141,23 +141,23 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 
 float ComputeFPS()
 {
-	/* static bool debugPrintFrameTime = false; */
-	/* static int lastms = 0; */
-	/* int curms = glutGet(GLUT_ELAPSED_TIME); */
-	/* int delta = curms - lastms; */
-	/* lastms = curms; */
+  /* static bool debugPrintFrameTime = false; */
+  /* static int lastms = 0; */
+  /* int curms = glutGet(GLUT_ELAPSED_TIME); */
+  /* int delta = curms - lastms; */
+  /* lastms = curms; */
 
-	/* static float dsmooth = 16; */
-	/* dsmooth = (dsmooth * 30 + delta) / 31; */
+  /* static float dsmooth = 16; */
+  /* dsmooth = (dsmooth * 30 + delta) / 31; */
 
-	/* if ( debugPrintFrameTime ) */
-	/* { */
-/* #ifdef ANDROID */
-	/* 	__android_log_print(ANDROID_LOG_VERBOSE, "Testbed", "msec = %f", dsmooth); */
-/* #endif */
-	/* } */
+  /* if ( debugPrintFrameTime ) */
+  /* { */
+  /* #ifdef ANDROID */
+  /*  __android_log_print(ANDROID_LOG_VERBOSE, "Testbed", "msec = %f", dsmooth); */
+  /* #endif */
+  /* } */
 
-	/* return dsmooth; */
+  /* return dsmooth; */
   std::cout << "NOT IMPLEMENTED: ";
   std::cout << "called ComputeFPS" << std::endl;
   return -1.0f;
@@ -166,79 +166,79 @@ float ComputeFPS()
 void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count)
 {
   std::cout << "called DrawParticles" << std::endl;
-	/* static unsigned int particle_texture = 0; */
+  /* static unsigned int particle_texture = 0; */
 
-	/* if (!particle_texture || */
-	/* 		!glIsTexture(particle_texture)) // Android deletes textures upon sleep etc. */
-	/* { */
-	/* 	// generate a "gaussian blob" texture procedurally */
-	/* 	glGenTextures(1, &particle_texture); */
-	/* 	b2Assert(particle_texture); */
-	/* 	const int TSIZE = 64; */
-	/* 	unsigned char tex[TSIZE][TSIZE][4]; */
-	/* 	for (int y = 0; y < TSIZE; y++) */
-	/* 	{ */
-	/* 		for (int x = 0; x < TSIZE; x++) */
-	/* 		{ */
-	/* 			float fx = (x + 0.5f) / TSIZE * 2 - 1; */
-	/* 			float fy = (y + 0.5f) / TSIZE * 2 - 1; */
-	/* 			float dist = sqrtf(fx * fx + fy * fy); */
-	/* 			unsigned char intensity = (unsigned char)(dist <= 1 ? smoothstep(1 - dist) * 255 : 0); */
-	/* 			tex[y][x][0] = tex[y][x][1] = tex[y][x][2] = 128; */
-	/* 			tex[y][x][3] = intensity; */
-	/* 		} */
-	/* 	} */
-	/* 	glEnable(GL_TEXTURE_2D); */
-	/* 	glBindTexture(GL_TEXTURE_2D, particle_texture); */
-	/* 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); */
-	/* 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); */
-	/* 	glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); */
-	/* 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); */
-	/* 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); */
-	/* 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE, TSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex); */
-	/* 	glDisable(GL_TEXTURE_2D); */
+  /* if (!particle_texture || */
+  /*    !glIsTexture(particle_texture)) // Android deletes textures upon sleep etc. */
+  /* { */
+  /*  // generate a "gaussian blob" texture procedurally */
+  /*  glGenTextures(1, &particle_texture); */
+  /*  b2Assert(particle_texture); */
+  /*  const int TSIZE = 64; */
+  /*  unsigned char tex[TSIZE][TSIZE][4]; */
+  /*  for (int y = 0; y < TSIZE; y++) */
+  /*  { */
+  /*    for (int x = 0; x < TSIZE; x++) */
+  /*    { */
+  /*      float fx = (x + 0.5f) / TSIZE * 2 - 1; */
+  /*      float fy = (y + 0.5f) / TSIZE * 2 - 1; */
+  /*      float dist = sqrtf(fx * fx + fy * fy); */
+  /*      unsigned char intensity = (unsigned char)(dist <= 1 ? smoothstep(1 - dist) * 255 : 0); */
+  /*      tex[y][x][0] = tex[y][x][1] = tex[y][x][2] = 128; */
+  /*      tex[y][x][3] = intensity; */
+  /*    } */
+  /*  } */
+  /*  glEnable(GL_TEXTURE_2D); */
+  /*  glBindTexture(GL_TEXTURE_2D, particle_texture); */
+  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); */
+  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); */
+  /*  glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); */
+  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); */
+  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); */
+  /*  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE, TSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex); */
+  /*  glDisable(GL_TEXTURE_2D); */
 
-	/* 	glEnable(GL_POINT_SMOOTH); */
-	/* } */
+  /*  glEnable(GL_POINT_SMOOTH); */
+  /* } */
 
-	/* glEnable(GL_TEXTURE_2D); */
-	/* glBindTexture(GL_TEXTURE_2D, particle_texture); */
+  /* glEnable(GL_TEXTURE_2D); */
+  /* glBindTexture(GL_TEXTURE_2D, particle_texture); */
 
-	/* #ifdef __ANDROID__ */
-	/* 	glEnable(GL_POINT_SPRITE_OES); */
-	/* 	glTexEnvf(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE); */
-	/* #else */
-	/* 	glEnable(GL_POINT_SPRITE); */
-	/* 	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE); */
-	/* #endif */
+  /* #ifdef __ANDROID__ */
+  /*  glEnable(GL_POINT_SPRITE_OES); */
+  /*  glTexEnvf(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE); */
+  /* #else */
+  /*  glEnable(GL_POINT_SPRITE); */
+  /*  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE); */
+  /* #endif */
 
-	/* const float particle_size_multiplier = 3;  // because of falloff */
-	/* glPointSize(radius * currentscale * particle_size_multiplier); */
+  /* const float particle_size_multiplier = 3;  // because of falloff */
+  /* glPointSize(radius * currentscale * particle_size_multiplier); */
 
-	/* glEnable(GL_BLEND); */
-	/* glBlendFunc(GL_SRC_ALPHA, GL_ONE); */
+  /* glEnable(GL_BLEND); */
+  /* glBlendFunc(GL_SRC_ALPHA, GL_ONE); */
 
-	/* glEnableClientState(GL_VERTEX_ARRAY); */
-	/* glVertexPointer(2, GL_FLOAT, 0, &centers[0].x); */
-	/* if (colors) */
-	/* { */
-	/* 	glEnableClientState(GL_COLOR_ARRAY); */
-	/* 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, &colors[0].r); */
-	/* } */
-	/* else */
-	/* { */
-	/* 	glColor4f(1, 1, 1, 1); */
-	/* } */
+  /* glEnableClientState(GL_VERTEX_ARRAY); */
+  /* glVertexPointer(2, GL_FLOAT, 0, &centers[0].x); */
+  /* if (colors) */
+  /* { */
+  /*  glEnableClientState(GL_COLOR_ARRAY); */
+  /*  glColorPointer(4, GL_UNSIGNED_BYTE, 0, &colors[0].r); */
+  /* } */
+  /* else */
+  /* { */
+  /*  glColor4f(1, 1, 1, 1); */
+  /* } */
 
-	/* glDrawArrays(GL_POINTS, 0, count); */
+  /* glDrawArrays(GL_POINTS, 0, count); */
 
-	/* glDisableClientState(GL_VERTEX_ARRAY); */
-	/* if (colors) glDisableClientState(GL_COLOR_ARRAY); */
+  /* glDisableClientState(GL_VERTEX_ARRAY); */
+  /* if (colors) glDisableClientState(GL_COLOR_ARRAY); */
 
-	/* glDisable(GL_BLEND); */
-	/* glDisable(GL_TEXTURE_2D); */
-	/* #ifdef __ANDROID__ */
-	/* 	glDisable(GL_POINT_SPRITE_OES); */
-	/* #endif */
+  /* glDisable(GL_BLEND); */
+  /* glDisable(GL_TEXTURE_2D); */
+  /* #ifdef __ANDROID__ */
+  /*  glDisable(GL_POINT_SPRITE_OES); */
+  /* #endif */
 }
 

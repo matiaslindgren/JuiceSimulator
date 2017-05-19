@@ -33,44 +33,44 @@ void handleEvents(sf::RenderWindow& window)
   sf::Event event;
   while (window.pollEvent(event))
   {
-      if (event.type == sf::Event::Closed)
+    if (event.type == sf::Event::Closed)
+    {
+      window.close();
+    } else if (event.type == sf::Event::MouseWheelScrolled &&
+        event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+    {
+      sf::View view = window.getView();
+      view.zoom(1.0f - event.mouseWheelScroll.delta/10.0f);
+      window.setView(view);
+    } else if (event.type == sf::Event::KeyPressed)
+    {
+      sf::View view = window.getView();
+      const float& offset = view.getSize().x/10.0f;
+      switch(event.key.code)
       {
-          window.close();
-      } else if (event.type == sf::Event::MouseWheelScrolled &&
-          event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-      {
-        sf::View view = window.getView();
-        view.zoom(1.0f - event.mouseWheelScroll.delta/10.0f);
-        window.setView(view);
-      } else if (event.type == sf::Event::KeyPressed)
-      {
-        sf::View view = window.getView();
-        const float& offset = view.getSize().x/10.0f;
-        switch(event.key.code)
-        {
-          case sf::Keyboard::Up:
-            view.move(0.0f, -offset);
-            break;
-          case sf::Keyboard::Left:
-            view.move(-offset, 0.0f);
-            break;
-          case sf::Keyboard::Down:
-            view.move(0.0f, offset);
-            break;
-          case sf::Keyboard::Right:
-            view.move(offset, 0.0f);
-            break;
-          default:
-            break;
-        }
-        window.setView(view);
-      } else if (event.type == sf::Event::MouseMoved)
-      {
-        sf::Vector2i mouse = sf::Mouse::getPosition(window);
-        /* std::cout << "mouse: " << mouse.x << ", " << mouse.y << std::endl; */
-        sf::Vector2f world = window.mapPixelToCoords(mouse);
-        /* std::cout << "world: " << world.x << ", " << world.y << std::endl; */
+        case sf::Keyboard::Up:
+          view.move(0.0f, -offset);
+          break;
+        case sf::Keyboard::Left:
+          view.move(-offset, 0.0f);
+          break;
+        case sf::Keyboard::Down:
+          view.move(0.0f, offset);
+          break;
+        case sf::Keyboard::Right:
+          view.move(offset, 0.0f);
+          break;
+        default:
+          break;
       }
+      window.setView(view);
+    } else if (event.type == sf::Event::MouseMoved)
+    {
+      sf::Vector2i mouse = sf::Mouse::getPosition(window);
+      /* std::cout << "mouse: " << mouse.x << ", " << mouse.y << std::endl; */
+      sf::Vector2f world = window.mapPixelToCoords(mouse);
+      /* std::cout << "world: " << world.x << ", " << world.y << std::endl; */
+    }
   }
 }
 
@@ -84,13 +84,13 @@ int main() {
   window.setFramerateLimit(fps);
 
   DebugDraw debug_draw(window);
-	uint32 flags = 0;
-	flags += b2Draw::e_shapeBit;
-	flags += b2Draw::e_particleBit;
-	flags += b2Draw::e_jointBit;
-	flags += b2Draw::e_aabbBit;
-	flags += b2Draw::e_centerOfMassBit;
-	debug_draw.SetFlags(flags);
+  uint32 flags = 0;
+  flags += b2Draw::e_shapeBit;
+  flags += b2Draw::e_particleBit;
+  flags += b2Draw::e_jointBit;
+  flags += b2Draw::e_aabbBit;
+  flags += b2Draw::e_centerOfMassBit;
+  debug_draw.SetFlags(flags);
   world.SetDebugDraw(&debug_draw);
 
   sf::View view = window.getDefaultView();
@@ -114,22 +114,22 @@ int main() {
 
   while (window.isOpen())
   {
-      handleEvents(window);
+    handleEvents(window);
 
-      window.clear(sf::Color::White);
-      window.draw(grid);
+    window.clear(sf::Color::White);
+    window.draw(grid);
 
-      world.TimeStep(timeStep, velocityIterations, positionIterations);
-      int i = 1;
-      for (auto shape : world.getShapeList())
-      {
-        /* std::cout << i << ": " << shape.getB2Position().x << ", " << shape.getB2Position().y << std::endl; */
-        window.draw(shape);
-        i++;
-      }
+    world.TimeStep(timeStep, velocityIterations, positionIterations);
+    int i = 1;
+    for (auto shape : world.getShapeList())
+    {
+      /* std::cout << i << ": " << shape.getB2Position().x << ", " << shape.getB2Position().y << std::endl; */
+      window.draw(shape);
+      i++;
+    }
 
-      world.DrawDebugData();
-      window.display();
+    world.DrawDebugData();
+    window.display();
   }
 
   state_manager.pop_state();
