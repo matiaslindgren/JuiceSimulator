@@ -2,6 +2,7 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include <tclap/CmdLine.h>
 #include "Grid.hpp"
 #include "DebugDraw.hpp"
 #include "World.hpp"
@@ -74,30 +75,62 @@ void handleEvents(sf::RenderWindow& window)
   }
 }
 
-int main() {
+int main(int argc, char** argv) {
+  bool disableRendering;
+  bool enablePhysicsDebug;
+  try
+  {
+    TCLAP::CmdLine cmd("a game - work in progress", ' ', "0.1");
+    TCLAP::SwitchArg renderSwitch(
+        "r", "no-rendering", "Disable all rendering.",
+        cmd, false);
+    TCLAP::SwitchArg physicsDebugSwitch(
+        "p", "physics-debug", "Render Box2D physics entities instead of SFML shapes and textures.",
+        cmd, false);
+
+    cmd.parse(argc, argv);
+
+    disableRendering = renderSwitch.getValue();
+    enablePhysicsDebug = physicsDebugSwitch.getValue();
+
+  } catch (TCLAP::ArgException& e)
+  {
+    std::cerr << "ERROR while parsing command line arguments: "
+      << e.error() << " for argument " << e.argId() << std::endl;
+    return EXIT_FAILURE;
+  }
+
   StateManager state_manager;
-  sf::ContextSettings settings;
   World world(0.0f, 10.0f);
 
-  settings.antialiasingLevel = antialiasinglevel;
-  sf::RenderWindow window(sf::VideoMode(window_width, window_height), "title todo", sf::Style::Default, settings);
-  window.setFramerateLimit(fps);
+  sf::RenderWindow window;
+  if (!disableRendering)
+  {
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = antialiasinglevel;
+    window.create(sf::VideoMode(window_width, window_height),
+        "title todo", sf::Style::Default, settings);
+    window.setFramerateLimit(fps);
+
+    sf::View view = window.getDefaultView();
+    view.setCenter(5-0.5, 5-0.5);
+    view.setSize(10, 10);
+    window.setView(view);
+  }
 
   DebugDraw debug_draw(window);
-  uint32 flags = 0;
-  flags += b2Draw::e_shapeBit;
-  flags += b2Draw::e_jointBit;
-  flags += b2Draw::e_aabbBit;
-  flags += b2Draw::e_pairBit;
-  flags += b2Draw::e_centerOfMassBit;
-  flags += b2Draw::e_particleBit;
-  debug_draw.SetFlags(flags);
-  world.SetDebugDraw(&debug_draw);
-
-  sf::View view = window.getDefaultView();
-  view.setCenter(5-0.5, 5-0.5);
-  view.setSize(10, 10);
-  window.setView(view);
+  if (enablePhysicsDebug)
+  {
+    uint32 flags = 0;
+    flags += b2Draw::e_shapeBit;
+    flags += b2Draw::e_jointBit;
+    flags += b2Draw::e_aabbBit;
+    flags += b2Draw::e_pairBit;
+    flags += b2Draw::e_centerOfMassBit;
+    flags += b2Draw::e_particleBit;
+    debug_draw.SetFlags(flags);
+    world.SetDebugDraw(&debug_draw);
+  }
 
   Grid grid;
 
@@ -121,13 +154,8 @@ int main() {
     window.draw(grid);
 
     world.TimeStep(timeStep, velocityIterations, positionIterations);
-    int i = 1;
     for (auto shape : world.getShapeList())
-    {
-      /* std::cout << i << ": " << shape.getB2Position().x << ", " << shape.getB2Position().y << std::endl; */
       window.draw(shape);
-      i++;
-    }
 
     world.DrawDebugData();
     window.display();
