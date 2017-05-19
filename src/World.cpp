@@ -1,28 +1,61 @@
 #include <array>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "World.hpp"
 #include "DebugDraw.hpp"
+#include "Polygon.hpp"
 
 
-Polygon& World::CreateShape(sf::Vector2f* corners, b2BodyType body_type)
+void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertexCount, b2BodyType body_type)
 {
-  sfml_shapes.emplace_back(corners, body_type);
-  Polygon& added = sfml_shapes.back();
-  b2Body* body = this->CreateBody(added.getB2BodyDefinition());
-  body->CreateFixture(added.getB2FixtureDefinition());
-  added.setB2Body(body);
-  return added;
+  b2Vec2 b2_vertices[vertexCount];
+  for (auto i = 0; i < vertexCount; i++)
+  {
+    b2_vertices[i].Set(corners[i].x, -corners[i].y);
+  }
+
+  b2PolygonShape shape;
+  shape.Set(b2_vertices, vertexCount);
+
+  b2BodyDef body_def;
+  body_def.userData = new Polygon(corners, vertexCount);
+  body_def.type = body_type;
+
+  b2FixtureDef fixture_def;
+  fixture_def.shape = &shape;
+  fixture_def.density = 0.1f;
+  fixture_def.restitution = 0.4f;
+  fixture_def.friction = 0.7f;
+
+  b2Body* body = this->CreateBody(&body_def);
+  body->CreateFixture(&fixture_def);
 }
 
-void World::TimeStep(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations)
+void World::Step(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations, sf::RenderTarget& renderTarget)
 {
   // Calculate a time step in the Box2D world
   b2World::Step(timeStep, velocityIterations, positionIterations, particleIterations);
   // Update all shapes in the visual SFML world accordingly
-  for (auto& shape : sfml_shapes)
+  b2Body* body = b2World::GetBodyList();
+
+  while (body)
   {
-    shape.applyPhysics();
+    Polygon* polygon = static_cast<Polygon*>(body->GetUserData());
+    b2Body* nextBody = body->GetNext();
+    if (-body->GetWorldCenter().y > 25 ||
+        body->GetWorldCenter().x > 25 ||
+        body->GetWorldCenter().x < -5)
+    {
+      delete polygon;
+      this->DestroyBody(body);
+      body = nextBody;
+      continue;
+    }
+    polygon->applyPhysics(body->GetTransform());
+    renderTarget.draw(*polygon);
+    polygon = nullptr;
+    body = nextBody;
   }
 
 }

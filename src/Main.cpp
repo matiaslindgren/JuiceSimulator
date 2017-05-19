@@ -155,9 +155,7 @@ int main(int argc, char** argv) {
 
     window.clear(sf::Color::White);
 
-    world.TimeStep(timeStep, velocityIterations, positionIterations);
-    for (auto shape : world.getShapeList())
-      window.draw(shape);
+    world.Step(timeStep, velocityIterations, positionIterations, particleIterations, window);
 
     if (enablePhysicsDebug)
       world.DrawDebugData();
