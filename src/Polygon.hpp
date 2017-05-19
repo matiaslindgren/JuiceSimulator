@@ -3,14 +3,14 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "TextBox.hpp"
+#include "Adapter.hpp"
 
 
 #include <iostream>
 class Polygon : public sf::Drawable, public sf::Transformable
 {
   public:
-    Polygon(const sf::Texture&, const sf::FloatRect&, b2BodyType body_type);
+    Polygon(sf::Vector2f* corners, b2BodyType body_type);
 
     const b2BodyDef* getB2BodyDefinition() const
     {
@@ -32,7 +32,7 @@ class Polygon : public sf::Drawable, public sf::Transformable
     // TODO temp, debug
     sf::Vector2f getB2Position() const
     {
-      return sf::Vector2f(m_body->GetPosition().x, m_body->GetPosition().y);
+      return convertVector(m_body->GetWorldCenter());
     }
 
     friend std::ostream& operator<<(std::ostream&, const Polygon&);
@@ -46,9 +46,7 @@ class Polygon : public sf::Drawable, public sf::Transformable
     b2PolygonShape m_shape;
     b2FixtureDef m_fixture_def;
     b2Body* m_body;
-    const sf::Texture& m_texture;
     sf::VertexArray m_vertices;
-    TextBox m_text_box;
 };
 
 

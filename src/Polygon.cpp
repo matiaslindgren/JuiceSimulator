@@ -2,36 +2,32 @@
 #include "Adapter.hpp"
 
 
-Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyType body_type)
-  : m_texture(texture),
-    m_vertices(sf::VertexArray(sf::Quads, 4))
+Polygon::Polygon(sf::Vector2f* corners, b2BodyType body_type)
+  : m_vertices(sf::VertexArray(sf::Quads, 4))
 {
-  std::cout << rect.left << ", " << rect.top << ", " << rect.width  << ", " << rect.height << std::endl;
-  m_vertices[0].position = sf::Vector2f(rect.left, rect.top);
-  m_vertices[1].position = sf::Vector2f(rect.left, rect.top - rect.height);
-  m_vertices[2].position = sf::Vector2f(rect.left + rect.width, rect.top - rect.height);
-  m_vertices[3].position = sf::Vector2f(rect.left + rect.width, rect.top);
-
-  m_vertices[0].color = sf::Color::Red;
-  m_vertices[1].color = sf::Color::Green;
-  m_vertices[2].color = sf::Color::Blue;
-  m_vertices[3].color = sf::Color::Yellow;
-
   b2Vec2 b2_vertices[vertex_count];
-  for (std::size_t i = 0; i < vertex_count; i++)
+  for (auto i = 0; i < vertex_count; i++)
   {
-    const b2Vec2& position = convertVector(m_vertices[i].position);
-    b2_vertices[i].Set(position.x, position.y);
+    const sf::Vector2f& corner = *corners;
+    m_vertices[i].position = corner;
+    b2_vertices[i].Set(corner.x, -corner.y);
+    corners++;
   }
+
   m_shape.Set(b2_vertices, vertex_count);
 
   m_body_def.userData = this;
   m_body_def.type = body_type;
-  m_body_def.position = b2_vertices[0];
+  /* m_body_def.position = b2_vertices[0]; */
 
   m_fixture_def.shape = &m_shape;
   m_fixture_def.density = 10.0f;
-  m_fixture_def.restitution = 0.4f;
+  m_fixture_def.restitution = 0.2f;
+
+  m_vertices[0].color = sf::Color::Red;
+  m_vertices[1].color = sf::Color::Green;
+  m_vertices[2].color = sf::Color::Blue;
+  m_vertices[3].color = sf::Color::Black;
 
 };
 
@@ -51,7 +47,6 @@ std::ostream& operator<<(std::ostream& os, const Polygon& polygon)
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   states.transform *= getTransform();
-  states.texture = &m_texture;
   // states.shader can be updated here
   target.draw(m_vertices, states);
 }

@@ -114,11 +114,11 @@ int main(int argc, char** argv) {
 
     sf::View view = window.getDefaultView();
     view.setCenter(5-0.5, 5-0.5);
-    view.setSize(10, 10);
+    view.setSize(view_width, view_height);
     window.setView(view);
   }
 
-  DebugDraw debug_draw(window);
+  DebugDraw debug_draw(window, sf::Vector2f(view_width/window_width, view_height/window_height));
   if (enablePhysicsDebug)
   {
     uint32 flags = 0;
@@ -132,16 +132,27 @@ int main(int argc, char** argv) {
     world.SetDebugDraw(&debug_draw);
   }
 
-  Grid grid;
 
-  sf::Texture wood;
-  if (!wood.loadFromFile("media/img/wood.jpg"))
-    return EXIT_FAILURE;
-  sf::Texture pulp;
-  if (!pulp.loadFromFile("media/img/pulp-fiction.jpg"))
-    return EXIT_FAILURE;
-  world.CreateShape(pulp, 1.0f, sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f), b2_dynamicBody);
-  world.CreateShape(wood, 1.0f, sf::FloatRect(0.0f, 3.0f, 5.0f, 0.1f), b2_staticBody);
+  for (auto x = 0.0f; x < 8.0f; x += 0.99)
+  {
+    for (auto y = -20.0f; y < 5.0f; y += 0.98)
+    {
+      sf::Vector2f corners[4];
+      corners[0] = sf::Vector2f(x, y);
+      corners[1] = sf::Vector2f(x + 0.5, y);
+      corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
+      corners[3] = sf::Vector2f(x, y + 0.5);
+      world.CreateShape(corners, b2_dynamicBody);
+    }
+  }
+  {
+    sf::Vector2f corners[4];
+    corners[0] = sf::Vector2f(-1.0f, 10.0f);
+    corners[1] = sf::Vector2f(13.0f, 10.0f);
+    corners[2] = sf::Vector2f(13.0f, 10.2f);
+    corners[3] = sf::Vector2f(-1.0f, 10.2f);
+    world.CreateShape(corners, b2_staticBody);
+  }
 
   state_manager.push_state(StateName(menu));
   cs(state_manager, world);
@@ -151,13 +162,13 @@ int main(int argc, char** argv) {
     handleEvents(window);
 
     window.clear(sf::Color::White);
-    window.draw(grid);
 
     world.TimeStep(timeStep, velocityIterations, positionIterations);
     for (auto shape : world.getShapeList())
       window.draw(shape);
 
     world.DrawDebugData();
+
     window.display();
   }
 
