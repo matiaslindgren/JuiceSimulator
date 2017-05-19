@@ -21,7 +21,10 @@ void World::TimeStep(const float& timeStep, const int& velocityIterations, const
   b2World::Step(timeStep, velocityIterations, positionIterations, particleIterations);
   // Update all shapes in the visual SFML world accordingly
   for (auto& shape : sfml_shapes)
+  {
     shape.applyPhysics();
+
+  }
 
 }
 

@@ -58,16 +58,6 @@ class DebugDraw : public b2Draw
   private:
     sf::RenderWindow& m_window;
 
-    sf::Color b2color_to_sfml(const b2Color& b2_color) const
-    {
-      return sf::Color(b2_color.r*255, b2_color.g*255, b2_color.b*255);
-    }
-
-    sf::Vector2f b2Vec2_to_sfml(const b2Vec2& b2_vector) const
-    {
-      return sf::Vector2f(b2_vector.x, -b2_vector.y);
-    }
-
 };
 
 float ComputeFPS();

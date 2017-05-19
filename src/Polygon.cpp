@@ -1,4 +1,5 @@
 #include "Polygon.hpp"
+#include "Adapter.hpp"
 
 
 Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyType body_type)
@@ -19,8 +20,8 @@ Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyTy
   b2Vec2 b2_vertices[vertex_count];
   for (std::size_t i = 0; i < vertex_count; i++)
   {
-    const sf::Vector2f& position = m_vertices[i].position;
-    b2_vertices[i].Set(position.x, -position.y);
+    const b2Vec2& position = convertVector(m_vertices[i].position);
+    b2_vertices[i].Set(position.x, position.y);
   }
   m_shape.Set(b2_vertices, vertex_count);
 
@@ -36,10 +37,7 @@ Polygon::Polygon(const sf::Texture& texture, const sf::FloatRect& rect, b2BodyTy
 
 void Polygon::applyPhysics()
 {
-  const b2Vec2& b2_body_pos = m_body->GetPosition();
-  const float& new_x = b2_body_pos.x;
-  const float& new_y = -b2_body_pos.y;
-  this->setPosition(new_x, new_y);
+  this->setPosition(convertVector(m_body->GetPosition()));
 }
 
 std::ostream& operator<<(std::ostream& os, const Polygon& polygon)

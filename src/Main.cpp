@@ -86,10 +86,11 @@ int main() {
   DebugDraw debug_draw(window);
   uint32 flags = 0;
   flags += b2Draw::e_shapeBit;
-  flags += b2Draw::e_particleBit;
   flags += b2Draw::e_jointBit;
   flags += b2Draw::e_aabbBit;
+  flags += b2Draw::e_pairBit;
   flags += b2Draw::e_centerOfMassBit;
+  flags += b2Draw::e_particleBit;
   debug_draw.SetFlags(flags);
   world.SetDebugDraw(&debug_draw);
 

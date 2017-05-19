@@ -15,6 +15,7 @@ set(SOURCES
   TextBox.cpp
   Grid.cpp
   DebugDraw.cpp
+  Adapter.cpp
 )
 
 include_directories (

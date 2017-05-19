@@ -19,18 +19,19 @@
 
 // This source file has been altered from the original Box2D source file
 
-#include "DebugDraw.hpp"
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include "DebugDraw.hpp"
+#include "Adapter.hpp"
 
+#include <iostream>
 
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
   sf::ConvexShape polygon(vertexCount);
   for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, b2Vec2_to_sfml(vertices[i]));
+    polygon.setPoint(i, convertVector(vertices[i]));
   polygon.setFillColor(sf::Color::Transparent);
-  polygon.setOutlineColor(b2color_to_sfml(color));
+  polygon.setOutlineColor(convertColor(color));
   polygon.setOutlineThickness(0.02f);
   m_window.draw(polygon);
   std::cout << "called DrawPolygon" << std::endl;
@@ -40,7 +41,7 @@ void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const
 {
   sf::ConvexShape polygon(vertexCount);
   for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, b2Vec2_to_sfml(vertices[i]));
+    polygon.setPoint(i, convertVector(vertices[i]));
   polygon.setFillColor(sf::Color(color.r, color.g, color.b, 255));
   m_window.draw(polygon);
   std::cout << "called DrawFlatPolygon" << std::endl;
@@ -50,8 +51,8 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 {
   sf::ConvexShape polygon(vertexCount);
   for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, b2Vec2_to_sfml(vertices[i]));
-  polygon.setFillColor(b2color_to_sfml(color));
+    polygon.setPoint(i, convertVector(vertices[i]));
+  polygon.setFillColor(convertColor(color));
   m_window.draw(polygon);
   std::cout << "called DrawSolidPolygon" << std::endl;
 }
@@ -61,7 +62,7 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
   sf::CircleShape circle(radius);
   circle.setPosition(center.x, center.y);
   circle.setFillColor(sf::Color::Transparent);
-  circle.setOutlineColor(b2color_to_sfml(color));
+  circle.setOutlineColor(convertColor(color));
   std::cout << "called DrawCircle" << std::endl;
 }
 
@@ -72,7 +73,7 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
   std::cout << "called DrawSolidCircle" << std::endl;
   sf::CircleShape circle(radius);
   circle.setPosition(center.x, center.y);
-  circle.setFillColor(b2color_to_sfml(color));
+  circle.setFillColor(convertColor(color));
   m_window.draw(circle);
 }
 
@@ -80,10 +81,10 @@ void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
 {
   std::cout << "called DrawSegment" << std::endl;
   sf::VertexArray line(sf::Lines, 2);
-  line[0].position = b2Vec2_to_sfml(p1);
-  line[1].position = b2Vec2_to_sfml(p2);
-  line[0].color = sf::Color(b2color_to_sfml(color));
-  line[1].color = sf::Color(b2color_to_sfml(color));
+  line[0].position = convertVector(p1);
+  line[1].position = convertVector(p2);
+  line[0].color = sf::Color(convertColor(color));
+  line[1].color = sf::Color(convertColor(color));
   m_window.draw(line);
 }
 
@@ -92,18 +93,18 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
   std::cout << "called DrawTransform" << std::endl;
 
   constexpr float k_axisScale = 1.4f;
-  const sf::Vector2f& p1 = b2Vec2_to_sfml(xf.p);
+  const sf::Vector2f& p1 = convertVector(xf.p);
   sf::Vector2f p2;
 
   sf::VertexArray line(sf::Lines, 4);
   line[0] = p1;
   line[0].color = sf::Color(1, 0, 0);
-  p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetXAxis());
+  p2 = p1 + k_axisScale * convertVector(xf.q.GetXAxis());
   line[1] = p2;
   line[1].color = sf::Color(1, 0, 0);
   line[2] = p1;
   line[2].color = sf::Color(0, 1, 0);
-  p2 = p1 + k_axisScale * b2Vec2_to_sfml(xf.q.GetYAxis());
+  p2 = p1 + k_axisScale * convertVector(xf.q.GetYAxis());
   line[3] = p2;
   line[3].color = sf::Color(0, 1, 0);
   m_window.draw(line);
@@ -136,7 +137,7 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
   quad[2] = sf::Vector2f(aabb->upperBound.x, -aabb->upperBound.y);
   quad[3] = sf::Vector2f(aabb->lowerBound.x, -aabb->upperBound.y);
   for (auto i = 0; i < 4; i++)
-    quad[i].color = b2color_to_sfml(c);
+    quad[i].color = convertColor(c);
 }
 
 float ComputeFPS()
@@ -165,6 +166,7 @@ float ComputeFPS()
 
 void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count)
 {
+  std::cout << "NOT IMPLEMENTED: ";
   std::cout << "called DrawParticles" << std::endl;
   /* static unsigned int particle_texture = 0; */
 
