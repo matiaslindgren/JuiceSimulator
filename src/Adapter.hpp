@@ -6,5 +6,6 @@
 sf::Color convertColor(const b2Color&);
 sf::Vector2f convertVector(const b2Vec2&);
 b2Vec2 convertVector(const sf::Vector2f&);
+float radiansToAngle(const float32& radians);
 
 #endif // ADAPTER.HPP
