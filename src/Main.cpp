@@ -179,7 +179,8 @@ int main(int argc, char** argv) {
     for (auto shape : world.getShapeList())
       window.draw(shape);
 
-    world.DrawDebugData();
+    if (enablePhysicsDebug)
+      world.DrawDebugData();
 
     window.display();
   }

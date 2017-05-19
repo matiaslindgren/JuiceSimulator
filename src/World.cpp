@@ -37,5 +37,6 @@ void World::DrawDebugData()
 {
   this->m_debugDraw->DrawMouseCoordinates();
   this->m_debugDraw->DrawGrid();
+  b2World::DrawDebugData();
 }
 
