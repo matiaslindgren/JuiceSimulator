@@ -20,61 +20,79 @@
 // This source file has been altered from the original Box2D source file
 
 #include <SFML/Graphics.hpp>
+#include "math.h"
 #include "DebugDraw.hpp"
 #include "Adapter.hpp"
 #include "TextBox.hpp"
 
 #include <iostream>
 
-// TODO lower the level, using shapes is unnecessary
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-  sf::ConvexShape polygon(vertexCount);
+  sf::VertexArray sfml_vertices(sf::LinesStrip, vertexCount);
+  const sf::Color& sfml_color = convertColor(color);
   for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, convertVector(vertices[i]));
-  polygon.setFillColor(sf::Color::Transparent);
-  polygon.setOutlineColor(convertColor(color));
-  polygon.setOutlineThickness(0.02f);
-  m_window.draw(polygon);
+  {
+    sfml_vertices[i].position = convertVector(vertices[i]);
+    sfml_vertices[i].color = sfml_color;
+  }
+  m_window.draw(sfml_vertices);
 }
 
 void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-  sf::ConvexShape polygon(vertexCount);
-  for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, convertVector(vertices[i]));
-  polygon.setFillColor(sf::Color(color.r, color.g, color.b, 255));
-  m_window.draw(polygon);
+  std::cout << "DrawFlatPolygon NOT IMPLEMENTED, calling DrawPolygon" << std::endl;
+  DrawPolygon(vertices, vertexCount, color);
 }
 
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-  sf::ConvexShape polygon(vertexCount);
-  TextBox coordinates_text; //TODO don't create, set position from mouse position intersecting a body
+  sf::VertexArray sfml_vertices(sf::TrianglesFan, vertexCount);
+  const sf::Color& sfml_color = convertColor(color);
   for (auto i = 0; i < vertexCount; i++)
-    polygon.setPoint(i, convertVector(vertices[i]));
-  coordinates_text.updatePosition(convertVector(vertices[0]).x, convertVector(vertices[0]).y);
-  polygon.setFillColor(convertColor(color));
-  m_window.draw(polygon);
-  m_window.draw(coordinates_text);
+  {
+    sfml_vertices[i].position = convertVector(vertices[i]);
+    sfml_vertices[i].color = sfml_color;
+  }
+  m_window.draw(sfml_vertices);
 }
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
-  sf::CircleShape circle(radius);
-  circle.setPosition(center.x, center.y);
-  circle.setFillColor(sf::Color::Transparent);
-  circle.setOutlineColor(convertColor(color));
+  std::cout << "draw circle" << std::endl;
+	constexpr float k_segments = 16.0f;
+	constexpr float k_increment = 2.0f * b2_pi / k_segments;
+  float theta = 0.0f;
+  sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
+  const sf::Color& sfml_color = convertColor(color);
+  sf::Vector2f sfml_center = convertVector(center);
+  for (auto i = 0; i < k_segments; i++)
+  {
+    sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
+    sfml_vertices[i].color = sfml_color;
+    theta += k_increment;
+  }
+  m_window.draw(sfml_vertices);
 }
 
 float smoothstep(float x) { return x * x * (3 - 2 * x); }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-  sf::CircleShape circle(radius);
-  circle.setPosition(center.x, center.y);
-  circle.setFillColor(convertColor(color));
-  m_window.draw(circle);
+  std::cout << "draw solid circle" << std::endl;
+	constexpr float k_segments = 16.0f;
+	constexpr float k_increment = 2.0f * b2_pi / k_segments;
+  float theta = 0.0f;
+  sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
+  const sf::Color& sfml_color = convertColor(color);
+  sf::Vector2f sfml_center = convertVector(center);
+  for (auto i = 0; i < k_segments; i++)
+  {
+    sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
+    sfml_vertices[i].color = sfml_color;
+    theta += k_increment;
+  }
+  m_window.draw(sfml_vertices);
 }
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
