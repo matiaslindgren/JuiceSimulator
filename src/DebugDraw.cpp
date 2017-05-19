@@ -162,6 +162,33 @@ float ComputeFPS()
   return -1.0f;
 }
 
+void DebugDraw::DrawMouseCoordinates()
+{
+  const sf::View& view = m_window.getView();
+  const sf::Vector2f& viewCenter = view.getCenter();
+  const sf::Vector2f& viewSize = view.getSize();
+  sf::Vector2f mousePos(
+      viewCenter.x - viewSize.x/2,
+      viewCenter.y - viewSize.y/2);
+  m_mouse_coordinate_box.setPosition(mousePos);
+  m_mouse_coordinate_box.updateText(mousePos.x, mousePos.y);
+  m_window.draw(m_mouse_coordinate_box);
+}
+
+void DebugDraw::DrawGrid()
+{
+  m_window.draw(m_grid);
+}
+
+
+
+
+
+
+
+
+
+
 void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count)
 {
   std::cout << "NOT IMPLEMENTED: ";

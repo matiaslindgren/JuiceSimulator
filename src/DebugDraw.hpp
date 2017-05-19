@@ -23,13 +23,15 @@
 #define DEBUGDRAW_H
 #include <Box2D/Box2D.h>
 #include <SFML/Graphics.hpp>
+#include "TextBox.hpp"
+#include "Grid.hpp"
 
 // This class implements debug drawing callbacks that are invoked
 // inside b2World::Step.
 class DebugDraw : public b2Draw
 {
   public:
-    explicit DebugDraw(sf::RenderWindow& window) : m_window(window) {};
+    DebugDraw(sf::RenderWindow& window, const sf::Vector2f& textScale) : m_window(window), m_mouse_coordinate_box(textScale) {};
 
     void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
 
@@ -55,8 +57,14 @@ class DebugDraw : public b2Draw
 
     void DrawAABB(b2AABB* aabb, const b2Color& color);
 
+    void DrawMouseCoordinates();
+
+    void DrawGrid();
+
   private:
     sf::RenderWindow& m_window;
+    TextBox m_mouse_coordinate_box;
+    Grid m_grid;
 
 };
 
