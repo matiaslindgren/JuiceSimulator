@@ -11,6 +11,8 @@
 
 constexpr auto window_width = 900;
 constexpr auto window_height = 600;
+constexpr auto view_width = window_width/30.0f;
+constexpr auto view_height = window_height/30.0f;
 constexpr auto fps = 60;
 constexpr auto antialiasinglevel = 4;
 constexpr auto timeStep = 1.0f / 60.0f;
