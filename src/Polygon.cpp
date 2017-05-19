@@ -33,7 +33,9 @@ Polygon::Polygon(sf::Vector2f* corners, b2BodyType body_type)
 
 void Polygon::applyPhysics()
 {
-  this->setPosition(convertVector(m_body->GetPosition()));
+  const b2Transform& b2_transform = m_body->GetTransform();
+  sf::Transformable::setPosition(convertVector(b2_transform.p));
+  sf::Transformable::setRotation(radiansToAngle(b2_transform.q.GetAngle()));
 }
 
 std::ostream& operator<<(std::ostream& os, const Polygon& polygon)
