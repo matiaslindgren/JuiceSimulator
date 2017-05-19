@@ -34,7 +34,6 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
   polygon.setOutlineColor(convertColor(color));
   polygon.setOutlineThickness(0.02f);
   m_window.draw(polygon);
-  std::cout << "called DrawPolygon" << std::endl;
 }
 
 void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -44,7 +43,6 @@ void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const
     polygon.setPoint(i, convertVector(vertices[i]));
   polygon.setFillColor(sf::Color(color.r, color.g, color.b, 255));
   m_window.draw(polygon);
-  std::cout << "called DrawFlatPolygon" << std::endl;
 }
 
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -54,7 +52,6 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
     polygon.setPoint(i, convertVector(vertices[i]));
   polygon.setFillColor(convertColor(color));
   m_window.draw(polygon);
-  std::cout << "called DrawSolidPolygon" << std::endl;
 }
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
@@ -63,14 +60,12 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
   circle.setPosition(center.x, center.y);
   circle.setFillColor(sf::Color::Transparent);
   circle.setOutlineColor(convertColor(color));
-  std::cout << "called DrawCircle" << std::endl;
 }
 
 float smoothstep(float x) { return x * x * (3 - 2 * x); }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-  std::cout << "called DrawSolidCircle" << std::endl;
   sf::CircleShape circle(radius);
   circle.setPosition(center.x, center.y);
   circle.setFillColor(convertColor(color));
@@ -79,7 +74,6 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-  std::cout << "called DrawSegment" << std::endl;
   sf::VertexArray line(sf::Lines, 2);
   line[0].position = convertVector(p1);
   line[1].position = convertVector(p2);
@@ -90,8 +84,6 @@ void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
 
 void DebugDraw::DrawTransform(const b2Transform& xf)
 {
-  std::cout << "called DrawTransform" << std::endl;
-
   constexpr float k_axisScale = 1.4f;
   const sf::Vector2f& p1 = convertVector(xf.p);
   sf::Vector2f p2;
@@ -112,7 +104,6 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 
 void DebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
-  std::cout << "called DrawPoint" << std::endl;
   this->DrawCircle(p, size, color);
 }
 
@@ -130,7 +121,6 @@ void DebugDraw::DrawString(const b2Vec2& p, const char *string, ...)
 
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
-  std::cout << "called DrawAABB" << std::endl;
   sf::VertexArray quad(sf::Quads, 4);
   quad[0] = sf::Vector2f(aabb->lowerBound.x, -aabb->lowerBound.y);
   quad[1] = sf::Vector2f(aabb->upperBound.x, -aabb->lowerBound.y);
