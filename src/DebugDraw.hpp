@@ -60,7 +60,7 @@ private:
 
   sf::Color b2color_to_sfml(const b2Color& b2_color) const
   {
-    return sf::Color(b2_color.r, b2_color.g, b2_color.b);
+    return sf::Color(b2_color.r*255, b2_color.g*255, b2_color.b*255);
   }
 
   sf::Vector2f b2Vec2_to_sfml(const b2Vec2& b2_vector) const
