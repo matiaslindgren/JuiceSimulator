@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 
   for (auto x = 0.0f; x < 8.0f; x += 0.99)
   {
-    for (auto y = -20.0f; y < 5.0f; y += 0.98)
+    for (auto y = -30.0f; y < -5.0f; y += 0.98)
     {
       sf::Vector2f corners[4];
       corners[0] = sf::Vector2f(x, y);
@@ -147,12 +147,22 @@ int main(int argc, char** argv) {
       world.CreateShape(corners, b2_dynamicBody);
     }
   }
+
+  /* { */
+  /*   sf::Vector2f corners[4]; */
+  /*   corners[0] = sf::Vector2f(-2.0f, 10.0f); */
+  /*   corners[1] = sf::Vector2f(6.0f, 5.0f); */
+  /*   corners[2] = sf::Vector2f(14.0f, 10.0f); */
+  /*   corners[3] = sf::Vector2f(6.0f, 6.0f); */
+  /*   world.CreateShape(corners, b2_staticBody); */
+  /* } */
+
   {
     sf::Vector2f corners[4];
-    corners[0] = sf::Vector2f(-1.0f, 10.0f);
-    corners[1] = sf::Vector2f(13.0f, 10.0f);
-    corners[2] = sf::Vector2f(13.0f, 10.2f);
-    corners[3] = sf::Vector2f(-1.0f, 10.2f);
+    corners[0] = sf::Vector2f(-12.0f, 12.0f);
+    corners[1] = sf::Vector2f(24.0f, 12.0f);
+    corners[2] = sf::Vector2f(24.0f, 12.5f);
+    corners[3] = sf::Vector2f(-12.0f, 12.5f);
     world.CreateShape(corners, b2_staticBody);
   }
 

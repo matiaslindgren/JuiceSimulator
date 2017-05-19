@@ -10,6 +10,7 @@ Polygon::Polygon(sf::Vector2f* corners, b2BodyType body_type)
   {
     const sf::Vector2f& corner = *corners;
     m_vertices[i].position = corner;
+    m_vertices[i].color = sf::Color(155, 200, 180, 150);
     b2_vertices[i].Set(corner.x, -corner.y);
     corners++;
   }
@@ -21,13 +22,14 @@ Polygon::Polygon(sf::Vector2f* corners, b2BodyType body_type)
   /* m_body_def.position = b2_vertices[0]; */
 
   m_fixture_def.shape = &m_shape;
-  m_fixture_def.density = 10.0f;
-  m_fixture_def.restitution = 0.2f;
+  m_fixture_def.density = 0.1f;
+  m_fixture_def.restitution = 0.4f;
+  m_fixture_def.friction = 0.7f;
 
-  m_vertices[0].color = sf::Color::Red;
-  m_vertices[1].color = sf::Color::Green;
-  m_vertices[2].color = sf::Color::Blue;
-  m_vertices[3].color = sf::Color::Black;
+  /* m_vertices[0].color = sf::Color::Red; */
+  /* m_vertices[1].color = sf::Color::Green; */
+  /* m_vertices[2].color = sf::Color::Blue; */
+  /* m_vertices[3].color = sf::Color::Black; */
 
 };
 
