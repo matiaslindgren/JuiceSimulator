@@ -128,6 +128,7 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
   quad[3] = sf::Vector2f(aabb->lowerBound.x, -aabb->upperBound.y);
   for (auto i = 0; i < 4; i++)
     quad[i].color = convertColor(c);
+  m_window.draw(quad);
 }
 
 float ComputeFPS()
