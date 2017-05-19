@@ -95,15 +95,17 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 
   sf::VertexArray line(sf::Lines, 4);
   line[0] = p1;
-  line[0].color = sf::Color(1, 0, 0);
+  line[0].color = sf::Color(255, 0, 0);
   p2 = p1 + k_axisScale * convertVector(xf.q.GetXAxis());
   line[1] = p2;
-  line[1].color = sf::Color(1, 0, 0);
+  line[1].color = sf::Color(255, 0, 0);
+
   line[2] = p1;
-  line[2].color = sf::Color(0, 1, 0);
+  line[2].color = sf::Color(0, 255, 0);
   p2 = p1 + k_axisScale * convertVector(xf.q.GetYAxis());
   line[3] = p2;
-  line[3].color = sf::Color(0, 1, 0);
+  line[3].color = sf::Color(0, 255, 0);
+
   m_window.draw(line);
 }
 
