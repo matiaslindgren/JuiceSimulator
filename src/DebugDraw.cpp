@@ -22,9 +22,11 @@
 #include <SFML/Graphics.hpp>
 #include "DebugDraw.hpp"
 #include "Adapter.hpp"
+#include "TextBox.hpp"
 
 #include <iostream>
 
+// TODO lower the level, using shapes is unnecessary
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
   sf::ConvexShape polygon(vertexCount);
@@ -48,10 +50,13 @@ void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
   sf::ConvexShape polygon(vertexCount);
+  TextBox coordinates_text; //TODO don't create, set position from mouse position intersecting a body
   for (auto i = 0; i < vertexCount; i++)
     polygon.setPoint(i, convertVector(vertices[i]));
+  coordinates_text.updatePosition(convertVector(vertices[0]).x, convertVector(vertices[0]).y);
   polygon.setFillColor(convertColor(color));
   m_window.draw(polygon);
+  m_window.draw(coordinates_text);
 }
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
