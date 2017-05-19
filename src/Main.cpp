@@ -28,6 +28,51 @@ void print_pos(const float& x, const float& y) {
   std::cout << n << ": " << x << ", " << y << std::endl;
 }
 
+void handleEvents(sf::RenderWindow& window)
+{
+  sf::Event event;
+  while (window.pollEvent(event))
+  {
+      if (event.type == sf::Event::Closed)
+      {
+          window.close();
+      } else if (event.type == sf::Event::MouseWheelScrolled &&
+          event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+      {
+        sf::View view = window.getView();
+        view.zoom(1.0f - event.mouseWheelScroll.delta/10.0f);
+        window.setView(view);
+      } else if (event.type == sf::Event::KeyPressed)
+      {
+        sf::View view = window.getView();
+        const float& offset = view.getSize().x/10.0f;
+        switch(event.key.code)
+        {
+          case sf::Keyboard::Up:
+            view.move(0.0f, -offset);
+            break;
+          case sf::Keyboard::Left:
+            view.move(-offset, 0.0f);
+            break;
+          case sf::Keyboard::Down:
+            view.move(0.0f, offset);
+            break;
+          case sf::Keyboard::Right:
+            view.move(offset, 0.0f);
+            break;
+          default:
+            break;
+        }
+        window.setView(view);
+      } else if (event.type == sf::Event::MouseMoved)
+      {
+        sf::Vector2i mouse = sf::Mouse::getPosition(window);
+        /* std::cout << "mouse: " << mouse.x << ", " << mouse.y << std::endl; */
+        sf::Vector2f world = window.mapPixelToCoords(mouse);
+        /* std::cout << "world: " << world.x << ", " << world.y << std::endl; */
+      }
+  }
+}
 
 int main() {
   StateManager state_manager;
@@ -62,59 +107,14 @@ int main() {
   if (!pulp.loadFromFile("media/img/pulp-fiction.jpg"))
     return EXIT_FAILURE;
   world.CreateShape(pulp, 1.0f, sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f), b2_dynamicBody);
-  world.CreateShape(wood, 1.0f, sf::FloatRect(0.0f, 3.0f, 5.0f, 1.0f), b2_staticBody);
+  world.CreateShape(wood, 1.0f, sf::FloatRect(0.0f, 3.0f, 5.0f, 0.1f), b2_staticBody);
 
   state_manager.push_state(StateName(menu));
-
   cs(state_manager, world);
 
-  bool ready = true;
   while (window.isOpen())
   {
-      sf::Event event;
-      while (window.pollEvent(event))
-      {
-          if (event.type == sf::Event::Closed)
-          {
-              window.close();
-          } else if (event.type == sf::Event::MouseWheelScrolled &&
-              event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-          {
-            sf::View view = window.getView();
-            view.zoom(1.0f - event.mouseWheelScroll.delta/10.0f);
-            window.setView(view);
-          } else if (event.type == sf::Event::KeyPressed)
-          {
-            sf::View view = window.getView();
-            const float& offset = view.getSize().x/10.0f;
-            switch(event.key.code)
-            {
-              case sf::Keyboard::Up:
-                view.move(0.0f, -offset);
-                break;
-              case sf::Keyboard::Left:
-                view.move(-offset, 0.0f);
-                break;
-              case sf::Keyboard::Down:
-                view.move(0.0f, offset);
-                break;
-              case sf::Keyboard::Right:
-                view.move(offset, 0.0f);
-                break;
-              default:
-                break;
-            }
-            window.setView(view);
-          } else if (event.type == sf::Event::MouseMoved && !ready)
-          {
-            sf::Vector2i mouse = sf::Mouse::getPosition(window);
-            std::cout << "mouse: " << mouse.x << ", " << mouse.y << std::endl;
-            sf::Vector2f world = window.mapPixelToCoords(mouse);
-            std::cout << "world: " << world.x << ", " << world.y << std::endl;
-            ready = true;
-          }
-
-      }
+      handleEvents(window);
 
       window.clear(sf::Color::White);
       window.draw(grid);
@@ -130,8 +130,8 @@ int main() {
 
       world.DrawDebugData();
       window.display();
-      ready = false;
   }
+
   state_manager.pop_state();
   cs(state_manager, world);
 
