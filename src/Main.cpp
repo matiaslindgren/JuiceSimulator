@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
@@ -112,45 +113,40 @@ int main(int argc, char** argv) {
   {
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
-    flags += b2Draw::e_jointBit;
-    flags += b2Draw::e_aabbBit;
-    flags += b2Draw::e_pairBit;
-    flags += b2Draw::e_centerOfMassBit;
-    flags += b2Draw::e_particleBit;
+    /* flags += b2Draw::e_jointBit; */
+    /* flags += b2Draw::e_aabbBit; */
+    /* flags += b2Draw::e_pairBit; */
+    /* flags += b2Draw::e_centerOfMassBit; */
+    /* flags += b2Draw::e_particleBit; */
     debug_draw.SetFlags(flags);
     world.SetDebugDraw(&debug_draw);
   }
 
 
-  for (auto x = 0.0f; x < 8.0f; x += 0.99)
-  {
-    for (auto y = -30.0f; y < -5.0f; y += 0.98)
-    {
-      sf::Vector2f corners[4];
-      corners[0] = sf::Vector2f(x, y);
-      corners[1] = sf::Vector2f(x + 0.5, y);
-      corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
-      corners[3] = sf::Vector2f(x, y + 0.5);
-      world.CreateShape(corners, b2_dynamicBody);
-    }
-  }
-
-  /* { */
-  /*   sf::Vector2f corners[4]; */
-  /*   corners[0] = sf::Vector2f(-2.0f, 10.0f); */
-  /*   corners[1] = sf::Vector2f(6.0f, 5.0f); */
-  /*   corners[2] = sf::Vector2f(14.0f, 10.0f); */
-  /*   corners[3] = sf::Vector2f(6.0f, 6.0f); */
-  /*   world.CreateShape(corners, b2_staticBody); */
-  /* } */
-
   {
     sf::Vector2f corners[4];
-    corners[0] = sf::Vector2f(-12.0f, 12.0f);
-    corners[1] = sf::Vector2f(24.0f, 12.0f);
-    corners[2] = sf::Vector2f(24.0f, 12.5f);
-    corners[3] = sf::Vector2f(-12.0f, 12.5f);
-    world.CreateShape(corners, b2_staticBody);
+
+    for (auto j = 0; j < 10; j++)
+    {
+      for (auto i = 0; i < 100; i++)
+      {
+        float x = -10 + (rand() % 30);
+        float y = -20 - (rand() % 300);
+        corners[0] = sf::Vector2f(x, y);
+        corners[1] = sf::Vector2f(x + 0.5, y);
+        corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
+        corners[3] = sf::Vector2f(x, y + 0.5);
+        world.CreateShape(corners, 4, b2_dynamicBody);
+      }
+    }
+
+    {
+      corners[0] = sf::Vector2f(-2.0f, 12.0f);
+      corners[1] = sf::Vector2f(8.0f, 12.0f);
+      corners[2] = sf::Vector2f(8.0f, 12.5f);
+      corners[3] = sf::Vector2f(-2.0f, 12.5f);
+      world.CreateShape(corners, 4, b2_staticBody);
+    }
   }
 
   while (window.isOpen())
