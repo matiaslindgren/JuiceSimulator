@@ -99,6 +99,7 @@ bool World::BodyOutOfBounds(const b2Body& body) const
 void World::SetDebugDraw(DebugDraw* debugDraw)
 {
   this->m_debugDraw = debugDraw;
+  this->m_debugDraw->getGrid().generate_grid(m_north_edge, m_west_edge, m_south_edge, m_east_edge, 1.0f);
   b2World::SetDebugDraw(debugDraw);
 }
 
