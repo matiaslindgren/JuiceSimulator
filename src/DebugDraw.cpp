@@ -59,11 +59,10 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertex_count, con
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
-  std::cout << "draw circle" << std::endl;
 	constexpr float k_segments = 16.0f;
 	constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
-  sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
+  sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments+1);
   const sf::Color& sfml_color = ConvertColor(color);
   sf::Vector2f sfml_center = ConvertVector(center);
   for (auto i = 0; i < k_segments; i++)
@@ -72,6 +71,8 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
     sfml_vertices[i].color = sfml_color;
     theta += k_increment;
   }
+  sfml_vertices[k_segments].position = sfml_vertices[0].position;
+  sfml_vertices[k_segments].color = sfml_vertices[0].color;
   window_.draw(sfml_vertices);
 }
 
@@ -79,14 +80,15 @@ float smoothstep(float x) { return x * x * (3 - 2 * x); }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-  std::cout << "draw solid circle" << std::endl;
 	constexpr float k_segments = 16.0f;
 	constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
-  sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
+  sf::VertexArray sfml_vertices(sf::TrianglesFan, k_segments+2);
   const sf::Color& sfml_color = ConvertColor(color);
   sf::Vector2f sfml_center = ConvertVector(center);
-  for (auto i = 0; i < k_segments; i++)
+  sfml_vertices[0].position = sfml_center;
+  sfml_vertices[0].color = sfml_color;
+  for (auto i = 1; i < k_segments + 2; i++)
   {
     sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
     sfml_vertices[i].color = sfml_color;
@@ -132,18 +134,6 @@ void DebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
   this->DrawCircle(p, size, color);
 }
 
-void DebugDraw::DrawString(int x, int y, const char *string, ...)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called DrawString with x y " << std::endl;
-}
-
-void DebugDraw::DrawString(const b2Vec2& p, const char *string, ...)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called DrawString with vector" << std::endl;
-}
-
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
   sf::VertexArray quad(sf::Quads, 4);
@@ -156,29 +146,6 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
   window_.draw(quad);
 }
 
-float ComputeFPS()
-{
-  /* static bool debugPrintFrameTime = false; */
-  /* static int lastms = 0; */
-  /* int curms = glutGet(GLUT_ELAPSED_TIME); */
-  /* int delta = curms - lastms; */
-  /* lastms = curms; */
-
-  /* static float dsmooth = 16; */
-  /* dsmooth = (dsmooth * 30 + delta) / 31; */
-
-  /* if ( debugPrintFrameTime ) */
-  /* { */
-  /* #ifdef ANDROID */
-  /*  __android_log_print(ANDROID_LOG_VERBOSE, "Testbed", "msec = %f", dsmooth); */
-  /* #endif */
-  /* } */
-
-  /* return dsmooth; */
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called ComputeFPS" << std::endl;
-  return -1.0f;
-}
 
 void DebugDraw::set_mouse_coordinates(const float& x, const float& y)
 {
@@ -209,92 +176,58 @@ DebugLines& DebugDraw::get_debuglines()
   return debuglines_;
 }
 
-
-
-
-
-
-
-
-
-
 void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count)
 {
+  for (auto i = 0; i < count; i++)
+  {
+    this->DrawSolidCircle(centers[i], radius, centers[i], b2Color(colors[i].r, colors[i].g, colors[i].b));
+
+    /* points[i].position.x = centers[i].x; */
+    /* points[i].position.y = -centers[i].y; */
+    /* points[i].color.r = 255*(1 - colors[i].r); */
+    /* points[i].color.g = 255*(1 - colors[i].g); */
+    /* points[i].color.b = 255*(1 - colors[i].b); */
+
+  }
+  /* window_.draw(points); */
+}
+
+
+// not implemented
+
+float ComputeFPS()
+{
+  /* static bool debugPrintFrameTime = false; */
+  /* static int lastms = 0; */
+  /* int curms = glutGet(GLUT_ELAPSED_TIME); */
+  /* int delta = curms - lastms; */
+  /* lastms = curms; */
+
+  /* static float dsmooth = 16; */
+  /* dsmooth = (dsmooth * 30 + delta) / 31; */
+
+  /* if ( debugPrintFrameTime ) */
+  /* { */
+  /* #ifdef ANDROID */
+  /*  __android_log_print(ANDROID_LOG_VERBOSE, "Testbed", "msec = %f", dsmooth); */
+  /* #endif */
+  /* } */
+
+  /* return dsmooth; */
   std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called DrawParticles" << std::endl;
-  /* static unsigned int particle_texture = 0; */
+  std::cout << "called ComputeFPS" << std::endl;
+  return -1.0f;
+}
 
-  /* if (!particle_texture || */
-  /*    !glIsTexture(particle_texture)) // Android deletes textures upon sleep etc. */
-  /* { */
-  /*  // generate a "gaussian blob" texture procedurally */
-  /*  glGenTextures(1, &particle_texture); */
-  /*  b2Assert(particle_texture); */
-  /*  const int TSIZE = 64; */
-  /*  unsigned char tex[TSIZE][TSIZE][4]; */
-  /*  for (int y = 0; y < TSIZE; y++) */
-  /*  { */
-  /*    for (int x = 0; x < TSIZE; x++) */
-  /*    { */
-  /*      float fx = (x + 0.5f) / TSIZE * 2 - 1; */
-  /*      float fy = (y + 0.5f) / TSIZE * 2 - 1; */
-  /*      float dist = sqrtf(fx * fx + fy * fy); */
-  /*      unsigned char intensity = (unsigned char)(dist <= 1 ? smoothstep(1 - dist) * 255 : 0); */
-  /*      tex[y][x][0] = tex[y][x][1] = tex[y][x][2] = 128; */
-  /*      tex[y][x][3] = intensity; */
-  /*    } */
-  /*  } */
-  /*  glEnable(GL_TEXTURE_2D); */
-  /*  glBindTexture(GL_TEXTURE_2D, particle_texture); */
-  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); */
-  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); */
-  /*  glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); */
-  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); */
-  /*  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); */
-  /*  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE, TSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex); */
-  /*  glDisable(GL_TEXTURE_2D); */
+void DebugDraw::DrawString(int x, int y, const char *string, ...)
+{
+  std::cout << "NOT IMPLEMENTED: ";
+  std::cout << "called DrawString with x y " << std::endl;
+}
 
-  /*  glEnable(GL_POINT_SMOOTH); */
-  /* } */
-
-  /* glEnable(GL_TEXTURE_2D); */
-  /* glBindTexture(GL_TEXTURE_2D, particle_texture); */
-
-  /* #ifdef __ANDROID__ */
-  /*  glEnable(GL_POINT_SPRITE_OES); */
-  /*  glTexEnvf(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE); */
-  /* #else */
-  /*  glEnable(GL_POINT_SPRITE); */
-  /*  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE); */
-  /* #endif */
-
-  /* const float particle_size_multiplier = 3;  // because of falloff */
-  /* glPointSize(radius * currentscale * particle_size_multiplier); */
-
-  /* glEnable(GL_BLEND); */
-  /* glBlendFunc(GL_SRC_ALPHA, GL_ONE); */
-
-  /* glEnableClientState(GL_VERTEX_ARRAY); */
-  /* glVertexPointer(2, GL_FLOAT, 0, &centers[0].x); */
-  /* if (colors) */
-  /* { */
-  /*  glEnableClientState(GL_COLOR_ARRAY); */
-  /*  glColorPointer(4, GL_UNSIGNED_BYTE, 0, &colors[0].r); */
-  /* } */
-  /* else */
-  /* { */
-  /*  glColor4f(1, 1, 1, 1); */
-  /* } */
-
-  /* glDrawArrays(GL_POINTS, 0, count); */
-
-  /* glDisableClientState(GL_VERTEX_ARRAY); */
-  /* if (colors) glDisableClientState(GL_COLOR_ARRAY); */
-
-  /* glDisable(GL_BLEND); */
-  /* glDisable(GL_TEXTURE_2D); */
-  /* #ifdef __ANDROID__ */
-  /*  glDisable(GL_POINT_SPRITE_OES); */
-  /* #endif */
+void DebugDraw::DrawString(const b2Vec2& p, const char *string, ...)
+{
+  std::cout << "NOT IMPLEMENTED: ";
+  std::cout << "called DrawString with vector" << std::endl;
 }
 
