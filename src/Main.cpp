@@ -148,6 +148,7 @@ int main(int argc, char** argv) {
     }
   }
 
+  unsigned int drawnFrames = 0;
   while (window.isOpen())
   {
     handleEvents(window);
