@@ -8,15 +8,15 @@
 class World : public b2World
 {
   public:
-    World(const float& gravityX,
-          const float& gravityY,
+    World(const float& gravity_x,
+          const float& gravity_y,
           const int& north_edge,
           const int& east_edge,
           const int& south_edge,
           const int& west_edge);
     ~World();
 
-    void CreateShape(const sf::Vector2f corners[], const unsigned int& vertexCount, b2BodyType body_type);
+    void CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type);
 
     bool BodyOutOfBounds(const b2Body&) const;
 
@@ -28,12 +28,12 @@ class World : public b2World
     void SetDebugDraw(DebugDraw*);
 
   private:
-    DebugDraw* m_debugDraw;
-    b2DestructionListener* m_destructionListener;
-    const int m_north_edge;
-    const int m_east_edge;
-    const int m_south_edge;
-    const int m_west_edge;
+    DebugDraw* debug_draw_;
+    b2DestructionListener* destruction_listener_;
+    const int north_edge_;
+    const int east_edge_;
+    const int south_edge_;
+    const int west_edge_;
 };
 
 #endif // WORLD_HPP

@@ -7,20 +7,20 @@
 #include "WorldCallbacks.hpp"
 
 
-World::World(const float& gravityX,
-             const float& gravityY,
+World::World(const float& gravity_x,
+             const float& gravity_y,
              const int& north_edge,
              const int& east_edge,
              const int& south_edge,
              const int& west_edge)
-  : b2World(b2Vec2(gravityX, -gravityY)),
-    m_destructionListener(new DestructionListener()),
-    m_north_edge(north_edge),
-    m_east_edge(east_edge),
-    m_south_edge(south_edge),
-    m_west_edge(west_edge)
+  : b2World(b2Vec2(gravity_x, -gravity_y)),
+    destruction_listener_(new DestructionListener()),
+    north_edge_(north_edge),
+    east_edge_(east_edge),
+    south_edge_(south_edge),
+    west_edge_(west_edge)
 {
-  b2World::SetDestructionListener(m_destructionListener);
+  b2World::SetDestructionListener(destruction_listener_);
 }
 
 World::~World()
@@ -33,7 +33,7 @@ World::~World()
     body->SetUserData(nullptr);
     body = nextBody;
   }
-  delete m_destructionListener;
+  delete destruction_listener_;
 }
 
 void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertexCount, b2BodyType body_type)
@@ -79,7 +79,7 @@ void World::Step(const float& timeStep, const int& velocityIterations, const int
       body = nextBody;
       continue;
     }
-    polygon->applyPhysics(body->GetTransform());
+    polygon->ApplyPhysics(body->GetTransform());
     renderTarget.draw(*polygon);
     polygon = nullptr;
     body = nextBody;
@@ -90,27 +90,27 @@ void World::Step(const float& timeStep, const int& velocityIterations, const int
 bool World::BodyOutOfBounds(const b2Body& body) const
 {
   const b2Vec2& bodyWorldCenter = body.GetWorldCenter();
-  return -bodyWorldCenter.y < m_north_edge ||
-         -bodyWorldCenter.y > m_south_edge ||
-         bodyWorldCenter.x < m_west_edge ||
-         bodyWorldCenter.x > m_east_edge;
+  return -bodyWorldCenter.y < north_edge_ ||
+         -bodyWorldCenter.y > south_edge_ ||
+         bodyWorldCenter.x < west_edge_ ||
+         bodyWorldCenter.x > east_edge_;
 }
 
-void World::SetDebugDraw(DebugDraw* debugDraw)
+void World::SetDebugDraw(DebugDraw* debug_draw)
 {
-  this->m_debugDraw = debugDraw;
-  b2World::SetDebugDraw(debugDraw);
-  DebugLines& debuglines = this->m_debugDraw->getDebugLines();
-  debuglines.generate_grid(m_north_edge, m_west_edge,
-                     m_south_edge, m_east_edge, 1.0f);
-  debuglines.generate_coordinate_axes(m_west_edge, m_east_edge,
-                                m_north_edge, m_south_edge);
+  this->debug_draw_ = debug_draw;
+  b2World::SetDebugDraw(debug_draw);
+  DebugLines& debuglines = this->debug_draw_->get_debuglines();
+  debuglines.GenerateGrid(north_edge_, west_edge_,
+                           south_edge_, east_edge_, 1.0f);
+  debuglines.GenerateCoordinateAxes(west_edge_, east_edge_,
+                                      north_edge_, south_edge_);
 }
 
 void World::DrawDebugData()
 {
-  this->m_debugDraw->DrawMouseCoordinates();
-  this->m_debugDraw->DrawDebugLines();
+  this->debug_draw_->DrawMouseCoordinates();
+  this->debug_draw_->DrawDebugLines();
   b2World::DrawDebugData();
 }
 

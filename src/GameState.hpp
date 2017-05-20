@@ -8,10 +8,10 @@ enum StateName {
 
 class GameState {
   public:
-    explicit GameState(const StateName& init_state) : state(init_state) {};
-    const StateName& get_state() { return state; };
-    std::string get_state_string() const {
-      switch(state) {
+    explicit GameState(const StateName& init_state) : state_(init_state) {};
+    const StateName& GetState() { return state_; };
+    std::string GetStateString() const {
+      switch(state_) {
         case StateName(menu):
           return "Menu";
         case StateName(playing):
@@ -23,5 +23,5 @@ class GameState {
       }
     }
   private:
-    StateName state;
+    StateName state_;
 };

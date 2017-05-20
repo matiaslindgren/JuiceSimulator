@@ -31,13 +31,13 @@
 class DebugDraw : public b2Draw
 {
   public:
-    DebugDraw(sf::RenderWindow& window, const sf::Vector2f& textScale) : m_window(window), m_mouse_coordinate_box(textScale) {};
+    DebugDraw(sf::RenderWindow& window, const sf::Vector2f& textScale) : window_(window), mouse_coordinate_box_(textScale) {};
 
-    void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
+    void DrawPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color);
 
-    void DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
+    void DrawFlatPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color);
 
-    void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
+    void DrawSolidPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color);
 
     void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color);
 
@@ -61,15 +61,15 @@ class DebugDraw : public b2Draw
 
     void DrawDebugLines();
 
-    DebugLines& getDebugLines();
+    DebugLines& get_debuglines();
 
-    void setMouseCoordinates(const float& x, const float& y);
+    void set_mouse_coordinates(const float& x, const float& y);
 
   private:
-    sf::RenderWindow& m_window;
-    sf::Vector2f m_mouse_coordinates;
-    TextBox m_mouse_coordinate_box;
-    DebugLines m_debuglines;
+    sf::RenderWindow& window_;
+    sf::Vector2f mouse_coordinates_;
+    TextBox mouse_coordinate_box_;
+    DebugLines debuglines_;
 
 };
 

@@ -13,7 +13,7 @@ TextBox::TextBox(const sf::Vector2f& scale)
 }
 
 
-void TextBox::updateText(const sf::Vector2f& position, const sf::Vector2f& scale)
+void TextBox::UpdateText(const sf::Vector2f& position, const sf::Vector2f& scale)
 {
   std::stringstream ss;
   ss << position.x << ", " << std::setprecision(2) << position.y;

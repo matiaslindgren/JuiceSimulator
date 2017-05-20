@@ -8,8 +8,7 @@ class TextBox : public sf::Drawable, public sf::Transformable
   public:
     TextBox(const sf::Vector2f& scale);
 
-    void updatePosition(const float& x, const float& y);
-    void updateText(const sf::Vector2f& position, const sf::Vector2f& scale);
+    void UpdateText(const sf::Vector2f& position, const sf::Vector2f& scale);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

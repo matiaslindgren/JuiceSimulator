@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 
-sf::Color convertColor(const b2Color&);
-sf::Vector2f convertVector(const b2Vec2&);
-b2Vec2 convertVector(const sf::Vector2f&);
-float radiansToAngle(const float32& radians);
+sf::Color ConvertColor(const b2Color&);
+sf::Vector2f ConvertVector(const b2Vec2&);
+b2Vec2 ConvertVector(const sf::Vector2f&);
+float RadiansToAngle(const float32&);
 
 #endif // ADAPTER.HPP

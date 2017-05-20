@@ -7,19 +7,7 @@
 #include "World.hpp"
 
 
-constexpr auto window_width = 900;
-constexpr auto window_height = 600;
-constexpr auto view_width = window_width/30.0f;
-constexpr auto view_height = window_height/30.0f;
-constexpr auto fps = 60;
-constexpr auto antialiasinglevel = 4;
-constexpr auto timeStep = 1.0f / 60.0f;
-constexpr auto velocityIterations = 6;
-constexpr auto positionIterations = 2;
-constexpr auto particleIterations = 2;
-
-
-void handleEvents(sf::RenderWindow& window, DebugDraw& debugDraw)
+void HandleEvents(sf::RenderWindow& window, DebugDraw& debug_draw)
 {
   sf::Event event;
   while (window.pollEvent(event))
@@ -58,33 +46,33 @@ void handleEvents(sf::RenderWindow& window, DebugDraw& debugDraw)
     } else if (event.type == sf::Event::MouseMoved)
     {
       const sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-      debugDraw.setMouseCoordinates(mouse_position.x, mouse_position.y);
+      debug_draw.set_mouse_coordinates(mouse_position.x, mouse_position.y);
     }
   }
 }
 
 int main(int argc, char** argv) {
-  bool disableRendering;
-  bool enablePhysicsDebug;
-  unsigned int gameLoopLimit;
+  bool disable_rendering;
+  bool enable_physics_debug;
+  unsigned int game_loop_limit;
   try
   {
     TCLAP::CmdLine cmd("a game - work in progress", ' ', "0.1");
-    TCLAP::SwitchArg renderSwitch(
+    TCLAP::SwitchArg render_switch(
         "r", "no-rendering", "Disable all rendering.",
         cmd, false);
-    TCLAP::SwitchArg physicsDebugSwitch(
+    TCLAP::SwitchArg physics_debug_switch(
         "p", "physics-debug", "Render Box2D physics entities instead of SFML shapes and textures.",
         cmd, false);
-    TCLAP::ValueArg<unsigned int> gameLoopLimitArg(
+    TCLAP::ValueArg<unsigned int> game_loop_limit_arg(
         "l", "loop-limit", "The amount of rendered window frames. The render window will be closed and application will terminate after this amount of frames have been rendered, regardless of application state.",
         false, 0, "unsigned integer", cmd);
 
     cmd.parse(argc, argv);
 
-    disableRendering = renderSwitch.getValue();
-    enablePhysicsDebug = physicsDebugSwitch.getValue();
-    gameLoopLimit = gameLoopLimitArg.getValue();
+    disable_rendering = render_switch.getValue();
+    enable_physics_debug = physics_debug_switch.getValue();
+    game_loop_limit = game_loop_limit_arg.getValue();
 
   } catch (TCLAP::ArgException& e)
   {
@@ -93,33 +81,41 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 8.0f, -10, 20, 20, -20);
+  World world(0.0f, 8.0f, -20, 20, 20, -20);
+
+  constexpr auto kWindowWidth = 900;
+  constexpr auto kWindowHeight = 600;
+  constexpr auto kViewWidth = kWindowWidth/30.0f;
+  constexpr auto kViewHeight = kWindowHeight/30.0f;
+  constexpr auto kFps = 60;
+  constexpr auto kAntialiasinglevel = 4;
+
 
   sf::RenderWindow window;
-  if (!disableRendering)
+  if (!disable_rendering)
   {
     sf::ContextSettings settings;
-    settings.antialiasingLevel = antialiasinglevel;
-    window.create(sf::VideoMode(window_width, window_height),
+    settings.antialiasingLevel = kAntialiasinglevel;
+    window.create(sf::VideoMode(kWindowWidth, kWindowHeight),
         "title todo", sf::Style::Default, settings);
-    window.setFramerateLimit(fps);
+    window.setFramerateLimit(kFps);
 
     sf::View view = window.getDefaultView();
     view.setCenter(5-0.5, 5-0.5);
-    view.setSize(view_width, view_height);
+    view.setSize(kViewWidth, kViewHeight);
     window.setView(view);
   }
 
-  DebugDraw debug_draw(window, sf::Vector2f(view_width/window_width, view_height/window_height));
-  if (enablePhysicsDebug)
+  DebugDraw debug_draw(window, sf::Vector2f(kViewWidth/kWindowWidth, kViewHeight/kWindowHeight));
+  if (enable_physics_debug)
   {
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
-    /* flags += b2Draw::e_jointBit; */
-    /* flags += b2Draw::e_aabbBit; */
-    /* flags += b2Draw::e_pairBit; */
-    /* flags += b2Draw::e_centerOfMassBit; */
-    /* flags += b2Draw::e_particleBit; */
+    flags += b2Draw::e_jointBit;
+    flags += b2Draw::e_aabbBit;
+    flags += b2Draw::e_pairBit;
+    flags += b2Draw::e_centerOfMassBit;
+    flags += b2Draw::e_particleBit;
     debug_draw.SetFlags(flags);
     world.SetDebugDraw(&debug_draw);
   }
@@ -149,21 +145,26 @@ int main(int argc, char** argv) {
 
   }
 
+  constexpr auto kTimeStep = 1.0f / 60.0f;
+  constexpr auto kVelocityIterations = 6;
+  constexpr auto kPositionIterations = 2;
+  constexpr auto kParticleIterations = 2;
+
   unsigned int drawnFrames = 0;
   while (window.isOpen())
   {
-    handleEvents(window, debug_draw);
+    HandleEvents(window, debug_draw);
 
     window.clear(sf::Color::White);
 
-    world.Step(timeStep, velocityIterations, positionIterations, particleIterations, window);
+    world.Step(kTimeStep, kVelocityIterations, kPositionIterations, kParticleIterations, window);
 
-    if (enablePhysicsDebug)
+    if (enable_physics_debug)
       world.DrawDebugData();
 
     window.display();
 
-    if (gameLoopLimit && drawnFrames++ > gameLoopLimit)
+    if (game_loop_limit && drawnFrames++ > game_loop_limit)
       window.close();
   }
 

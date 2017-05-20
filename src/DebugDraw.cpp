@@ -27,34 +27,34 @@
 
 #include <iostream>
 
-void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color)
 {
-  sf::VertexArray sfml_vertices(sf::LinesStrip, vertexCount);
-  const sf::Color& sfml_color = convertColor(color);
-  for (auto i = 0; i < vertexCount; i++)
+  sf::VertexArray sfml_vertices(sf::LinesStrip, vertex_count);
+  const sf::Color& sfml_color = ConvertColor(color);
+  for (auto i = 0; i < vertex_count; i++)
   {
-    sfml_vertices[i].position = convertVector(vertices[i]);
+    sfml_vertices[i].position = ConvertVector(vertices[i]);
     sfml_vertices[i].color = sfml_color;
   }
-  m_window.draw(sfml_vertices);
+  window_.draw(sfml_vertices);
 }
 
-void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawFlatPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color)
 {
   std::cout << "DrawFlatPolygon NOT IMPLEMENTED, calling DrawPolygon" << std::endl;
-  DrawPolygon(vertices, vertexCount, color);
+  DrawPolygon(vertices, vertex_count, color);
 }
 
-void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color)
 {
-  sf::VertexArray sfml_vertices(sf::TrianglesFan, vertexCount);
-  const sf::Color& sfml_color = convertColor(color);
-  for (auto i = 0; i < vertexCount; i++)
+  sf::VertexArray sfml_vertices(sf::TrianglesFan, vertex_count);
+  const sf::Color& sfml_color = ConvertColor(color);
+  for (auto i = 0; i < vertex_count; i++)
   {
-    sfml_vertices[i].position = convertVector(vertices[i]);
+    sfml_vertices[i].position = ConvertVector(vertices[i]);
     sfml_vertices[i].color = sfml_color;
   }
-  m_window.draw(sfml_vertices);
+  window_.draw(sfml_vertices);
 }
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
@@ -64,15 +64,15 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
 	constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
   sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
-  const sf::Color& sfml_color = convertColor(color);
-  sf::Vector2f sfml_center = convertVector(center);
+  const sf::Color& sfml_color = ConvertColor(color);
+  sf::Vector2f sfml_center = ConvertVector(center);
   for (auto i = 0; i < k_segments; i++)
   {
     sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
     sfml_vertices[i].color = sfml_color;
     theta += k_increment;
   }
-  m_window.draw(sfml_vertices);
+  window_.draw(sfml_vertices);
 }
 
 float smoothstep(float x) { return x * x * (3 - 2 * x); }
@@ -84,47 +84,47 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
 	constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
   sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments);
-  const sf::Color& sfml_color = convertColor(color);
-  sf::Vector2f sfml_center = convertVector(center);
+  const sf::Color& sfml_color = ConvertColor(color);
+  sf::Vector2f sfml_center = ConvertVector(center);
   for (auto i = 0; i < k_segments; i++)
   {
     sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
     sfml_vertices[i].color = sfml_color;
     theta += k_increment;
   }
-  m_window.draw(sfml_vertices);
+  window_.draw(sfml_vertices);
 }
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
   sf::VertexArray line(sf::Lines, 2);
-  line[0].position = convertVector(p1);
-  line[1].position = convertVector(p2);
-  line[0].color = sf::Color(convertColor(color));
-  line[1].color = sf::Color(convertColor(color));
-  m_window.draw(line);
+  line[0].position = ConvertVector(p1);
+  line[1].position = ConvertVector(p2);
+  line[0].color = sf::Color(ConvertColor(color));
+  line[1].color = sf::Color(ConvertColor(color));
+  window_.draw(line);
 }
 
 void DebugDraw::DrawTransform(const b2Transform& xf)
 {
   constexpr float k_axisScale = 1.4f;
-  const sf::Vector2f& p1 = convertVector(xf.p);
+  const sf::Vector2f& p1 = ConvertVector(xf.p);
   sf::Vector2f p2;
 
   sf::VertexArray line(sf::Lines, 4);
   line[0] = p1;
   line[0].color = sf::Color(255, 0, 0);
-  p2 = p1 + k_axisScale * convertVector(xf.q.GetXAxis());
+  p2 = p1 + k_axisScale * ConvertVector(xf.q.GetXAxis());
   line[1] = p2;
   line[1].color = sf::Color(255, 0, 0);
 
   line[2] = p1;
   line[2].color = sf::Color(0, 255, 0);
-  p2 = p1 + k_axisScale * convertVector(xf.q.GetYAxis());
+  p2 = p1 + k_axisScale * ConvertVector(xf.q.GetYAxis());
   line[3] = p2;
   line[3].color = sf::Color(0, 255, 0);
 
-  m_window.draw(line);
+  window_.draw(line);
 }
 
 void DebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
@@ -152,8 +152,8 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
   quad[2] = sf::Vector2f(aabb->upperBound.x, -aabb->upperBound.y);
   quad[3] = sf::Vector2f(aabb->lowerBound.x, -aabb->upperBound.y);
   for (auto i = 0; i < 4; i++)
-    quad[i].color = convertColor(c);
-  m_window.draw(quad);
+    quad[i].color = ConvertColor(c);
+  window_.draw(quad);
 }
 
 float ComputeFPS()
@@ -180,35 +180,33 @@ float ComputeFPS()
   return -1.0f;
 }
 
-void DebugDraw::setMouseCoordinates(const float& x, const float& y)
+void DebugDraw::set_mouse_coordinates(const float& x, const float& y)
 {
-  m_mouse_coordinates.x = x;
-  m_mouse_coordinates.y = y;
+  mouse_coordinates_.x = x;
+  mouse_coordinates_.y = y;
 }
 
 void DebugDraw::DrawMouseCoordinates()
 {
-  const sf::View& view = m_window.getView();
+  const sf::View& view = window_.getView();
   const sf::Vector2f& viewCenter = view.getCenter();
   const sf::Vector2f& viewSize = view.getSize();
-  sf::Vector2f textPosition(
-      viewCenter.x - viewSize.x/2,
-      viewCenter.y - viewSize.y/2);
-  m_mouse_coordinate_box.setPosition(textPosition);
-  const sf::Vector2u& window_size = m_window.getSize();
+  sf::Vector2f textPosition(viewCenter.x - viewSize.x/2,
+                            viewCenter.y - viewSize.y/2);
+  const sf::Vector2u& window_size = window_.getSize();
   const sf::Vector2f text_scale(viewSize.x/window_size.x, viewSize.y/window_size.y);
-  m_mouse_coordinate_box.updateText(m_mouse_coordinates, text_scale);
-  m_window.draw(m_mouse_coordinate_box);
+  mouse_coordinate_box_.UpdateText(mouse_coordinates_, text_scale);
+  window_.draw(mouse_coordinate_box_);
 }
 
 void DebugDraw::DrawDebugLines()
 {
-  m_window.draw(m_debuglines);
+  window_.draw(debuglines_);
 }
 
-DebugLines& DebugDraw::getDebugLines()
+DebugLines& DebugDraw::get_debuglines()
 {
-  return m_debuglines;
+  return debuglines_;
 }
 
 
