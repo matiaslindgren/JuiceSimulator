@@ -3,13 +3,13 @@
 #include <SFML/Graphics.hpp>
 
 
-class Grid : public sf::Drawable, public sf::Transformable
+class Grid : public sf::Drawable
 {
   public:
-    Grid(const float& top = 0.0f,
-         const float& left = 0.0f,
-         const float& line_length = 10.0f,
-         const float& offset = 1.0f);
+    Grid();
+    void generate_grid(const float& top, const float& left,
+                       const float& bottom, const float& right,
+                       const float& spacing);
   private:
     virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
     sf::VertexArray lines;

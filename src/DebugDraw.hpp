@@ -61,6 +61,8 @@ class DebugDraw : public b2Draw
 
     void DrawGrid();
 
+    Grid& getGrid();
+
   private:
     sf::RenderWindow& m_window;
     TextBox m_mouse_coordinate_box;

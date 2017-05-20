@@ -198,6 +198,11 @@ void DebugDraw::DrawGrid()
   m_window.draw(m_grid);
 }
 
+Grid& DebugDraw::getGrid()
+{
+  return m_grid;
+}
+
 
 
 

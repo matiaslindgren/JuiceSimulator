@@ -1,26 +1,33 @@
 #include "Grid.hpp"
 
 
-Grid::Grid(const float& top, const float& left,
-           const float& line_length, const float& offset)
-  : lines(sf::Lines)
+Grid::Grid() : lines(sf::Lines)
 {
-  for (auto delta = 0.0f; delta < line_length; delta += offset)
+}
+
+void Grid::generate_grid(const float& top, const float& left,
+                         const float& bottom, const float& right,
+                         const float& spacing)
+{
+  lines.clear();
+  for (auto y = top; y < bottom + 0.5f*spacing; y += spacing)
   {
-    sf::Vertex y_top(sf::Vector2f(delta, top), sf::Color::Black);
-    sf::Vertex y_bottom(sf::Vector2f(delta, top + line_length), sf::Color::Black);
-    sf::Vertex x_left(sf::Vector2f(left, delta), sf::Color::Black);
-    sf::Vertex x_right(sf::Vector2f(left + line_length, delta), sf::Color::Black);
-    lines.append(y_top);
-    lines.append(y_bottom);
-    lines.append(x_left);
-    lines.append(x_right);
+    sf::Vertex horizontal_left(sf::Vector2f(left, y), sf::Color::Black);
+    sf::Vertex horizontal_right(sf::Vector2f(right, y), sf::Color::Black);
+    lines.append(horizontal_left);
+    lines.append(horizontal_right);
+  }
+  for (auto x = left; x < right + 0.5f*spacing; x += spacing)
+  {
+    sf::Vertex vertical_left(sf::Vector2f(x, top), sf::Color::Black);
+    sf::Vertex vertical_right(sf::Vector2f(x, bottom), sf::Color::Black);
+    lines.append(vertical_left);
+    lines.append(vertical_right);
   }
 }
 
 void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-  states.transform *= getTransform();
   target.draw(lines, states);
 }
 
