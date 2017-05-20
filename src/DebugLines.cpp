@@ -1,11 +1,11 @@
-#include "Grid.hpp"
+#include "DebugLines.hpp"
 
 
-Grid::Grid() : grid(sf::Lines), coordinate_axes(sf::Lines, 4)
+DebugLines::DebugLines() : grid(sf::Lines), coordinate_axes(sf::Lines, 4)
 {
 }
 
-void Grid::generate_grid(const float& top, const float& left,
+void DebugLines::generate_grid(const float& top, const float& left,
                          const float& bottom, const float& right,
                          const float& spacing)
 {
@@ -27,7 +27,7 @@ void Grid::generate_grid(const float& top, const float& left,
   }
 }
 
-void Grid::generate_coordinate_axes(const float& x_start, const float& x_end,
+void DebugLines::generate_coordinate_axes(const float& x_start, const float& x_end,
                                     const float& y_start, const float& y_end)
 {
   const sf::Color x_axis_color(200, 0, 0, 255);
@@ -38,7 +38,7 @@ void Grid::generate_coordinate_axes(const float& x_start, const float& x_end,
   coordinate_axes[3] = sf::Vertex(sf::Vector2f(0, y_end), y_axis_color);
 }
 
-void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void DebugLines::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   target.draw(grid, states);
   target.draw(coordinate_axes, states);

@@ -24,7 +24,7 @@
 #include <Box2D/Box2D.h>
 #include <SFML/Graphics.hpp>
 #include "TextBox.hpp"
-#include "Grid.hpp"
+#include "DebugLines.hpp"
 
 // This class implements debug drawing callbacks that are invoked
 // inside b2World::Step.
@@ -59,9 +59,9 @@ class DebugDraw : public b2Draw
 
     void DrawMouseCoordinates();
 
-    void DrawGrid();
+    void DrawDebugLines();
 
-    Grid& getGrid();
+    DebugLines& getDebugLines();
 
     void setMouseCoordinates(const float& x, const float& y);
 
@@ -69,7 +69,7 @@ class DebugDraw : public b2Draw
     sf::RenderWindow& m_window;
     sf::Vector2f m_mouse_coordinates;
     TextBox m_mouse_coordinate_box;
-    Grid m_grid;
+    DebugLines m_debuglines;
 
 };
 

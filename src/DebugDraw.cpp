@@ -201,14 +201,14 @@ void DebugDraw::DrawMouseCoordinates()
   m_window.draw(m_mouse_coordinate_box);
 }
 
-void DebugDraw::DrawGrid()
+void DebugDraw::DrawDebugLines()
 {
-  m_window.draw(m_grid);
+  m_window.draw(m_debuglines);
 }
 
-Grid& DebugDraw::getGrid()
+DebugLines& DebugDraw::getDebugLines()
 {
-  return m_grid;
+  return m_debuglines;
 }
 
 

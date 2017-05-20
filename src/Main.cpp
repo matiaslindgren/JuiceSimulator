@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <tclap/CmdLine.h>
-#include "Grid.hpp"
 #include "DebugDraw.hpp"
 #include "World.hpp"
 

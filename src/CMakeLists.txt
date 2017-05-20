@@ -11,7 +11,7 @@ set(SOURCES
   World.cpp
   Polygon.cpp
   TextBox.cpp
-  Grid.cpp
+  DebugLines.cpp
   DebugDraw.cpp
   Adapter.cpp
   WorldCallbacks.cpp

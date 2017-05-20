@@ -1,12 +1,12 @@
-#ifndef GRID_HPP
-#define GRID_HPP
+#ifndef DEBUGLINES_HPP
+#define DEBUGLINES_HPP
 #include <SFML/Graphics.hpp>
 
 
-class Grid : public sf::Drawable
+class DebugLines : public sf::Drawable
 {
   public:
-    Grid();
+    DebugLines();
     void generate_grid(const float& top, const float& left,
                        const float& bottom, const float& right,
                        const float& spacing);
@@ -19,4 +19,4 @@ class Grid : public sf::Drawable
 };
 
 
-#endif // GRID.HPP
+#endif // DEBUGLINES.HPP
