@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 10.0f);
+  World world(0.0f, 8.0f, -10, 20, 20, -20);
 
   sf::RenderWindow window;
   if (!disableRendering)

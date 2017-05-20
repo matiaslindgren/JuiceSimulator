@@ -1,11 +1,40 @@
-#include <array>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "World.hpp"
 #include "DebugDraw.hpp"
 #include "Polygon.hpp"
+#include "WorldCallbacks.hpp"
 
+
+World::World(const float& gravityX,
+             const float& gravityY,
+             const int& north_edge,
+             const int& east_edge,
+             const int& south_edge,
+             const int& west_edge)
+  : b2World(b2Vec2(gravityX, -gravityY)),
+    m_destructionListener(new DestructionListener()),
+    m_north_edge(north_edge),
+    m_east_edge(east_edge),
+    m_south_edge(south_edge),
+    m_west_edge(west_edge)
+{
+  b2World::SetDestructionListener(m_destructionListener);
+}
+
+World::~World()
+{
+  b2Body* body = b2World::GetBodyList();
+  while (body)
+  {
+    b2Body* nextBody = body->GetNext();
+    delete static_cast<Polygon*>(body->GetUserData());
+    body->SetUserData(nullptr);
+    body = nextBody;
+  }
+  delete m_destructionListener;
+}
 
 void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertexCount, b2BodyType body_type)
 {
@@ -42,11 +71,10 @@ void World::Step(const float& timeStep, const int& velocityIterations, const int
   {
     Polygon* polygon = static_cast<Polygon*>(body->GetUserData());
     b2Body* nextBody = body->GetNext();
-    if (-body->GetWorldCenter().y > 25 ||
-        body->GetWorldCenter().x > 25 ||
-        body->GetWorldCenter().x < -5)
+    if (BodyOutOfBounds(*body))
     {
       delete polygon;
+      body->SetUserData(nullptr);
       this->DestroyBody(body);
       body = nextBody;
       continue;
@@ -57,6 +85,15 @@ void World::Step(const float& timeStep, const int& velocityIterations, const int
     body = nextBody;
   }
 
+}
+
+bool World::BodyOutOfBounds(const b2Body& body) const
+{
+  const b2Vec2& bodyWorldCenter = body.GetWorldCenter();
+  return -bodyWorldCenter.y < m_north_edge ||
+         -bodyWorldCenter.y > m_south_edge ||
+         bodyWorldCenter.x < m_west_edge ||
+         bodyWorldCenter.x > m_east_edge;
 }
 
 void World::SetDebugDraw(DebugDraw* debugDraw)
