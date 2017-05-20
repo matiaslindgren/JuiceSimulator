@@ -56,12 +56,6 @@ void handleEvents(sf::RenderWindow& window)
           break;
       }
       window.setView(view);
-    } else if (event.type == sf::Event::MouseMoved)
-    {
-      sf::Vector2i mouse = sf::Mouse::getPosition(window);
-      /* std::cout << "mouse: " << mouse.x << ", " << mouse.y << std::endl; */
-      sf::Vector2f world = window.mapPixelToCoords(mouse);
-      /* std::cout << "world: " << world.x << ", " << world.y << std::endl; */
     }
   }
 }

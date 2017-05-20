@@ -19,17 +19,16 @@ void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex
   shape.Set(b2_vertices, vertexCount);
 
   b2BodyDef body_def;
-  body_def.userData = new Polygon(corners, vertexCount);
   body_def.type = body_type;
 
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
-  fixture_def.density = 0.1f;
-  fixture_def.restitution = 0.4f;
-  fixture_def.friction = 0.7f;
+  fixture_def.density = 10.0f;
+  fixture_def.restitution = 0.1f;
 
   b2Body* body = this->CreateBody(&body_def);
   body->CreateFixture(&fixture_def);
+  body->SetUserData(new Polygon(corners, vertexCount));
 }
 
 void World::Step(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations, sf::RenderTarget& renderTarget)
