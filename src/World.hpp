@@ -18,6 +18,9 @@ class World : public b2World
 
     void CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type);
 
+    using b2World::CreateParticleSystem;
+    void CreateParticleSystem(const b2Vec2&);
+
     bool BodyOutOfBounds(const b2Body&) const;
 
     using b2World::Step;
@@ -29,6 +32,8 @@ class World : public b2World
 
   private:
     DebugDraw* debug_draw_;
+    b2ParticleSystem* particle_system_;
+    b2ParticleGroup* particle_group_;
     b2DestructionListener* destruction_listener_;
     const int north_edge_;
     const int east_edge_;

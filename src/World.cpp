@@ -60,6 +60,28 @@ void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex
   body->SetUserData(new Polygon(corners, vertex_count));
 }
 
+void World::CreateParticleSystem(const b2Vec2& start_pos)
+{
+  std::cout << "CreateParticleSystem" << std::endl;
+  const b2ParticleSystemDef particle_system_def;
+	particle_system_ = b2World::CreateParticleSystem(&particle_system_def);
+  std::cout << "b2World::CreateParticleSystem" << std::endl;
+	particle_system_->SetGravityScale(40.0f);
+	particle_system_->SetDensity(0.2f);
+	particle_system_->SetRadius(0.15f);
+  particle_system_->SetDamping(2.0001f);
+
+  b2ParticleGroupDef particle_group_def;
+  b2PolygonShape b2_polygon;
+  b2_polygon.SetAsBox(5.5f, 5.5f);
+  particle_group_def.shape = &b2_polygon;
+  particle_group_def.flags = b2_waterParticle;
+  particle_group_def.position.Set(start_pos.x, -start_pos.y);
+  particle_group_def.color.Set(10, 50, 230, 100);
+  particle_group_ = particle_system_->CreateParticleGroup(particle_group_def);
+  std::cout << "particle_system_->CreateParticleGroup" << std::endl;
+}
+
 void World::Step(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations, sf::RenderTarget& renderTarget)
 {
   // Calculate a time step in the Box2D world
