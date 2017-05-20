@@ -14,6 +14,7 @@ set(SOURCES
   Grid.cpp
   DebugDraw.cpp
   Adapter.cpp
+  WorldCallbacks.cpp
 )
 
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
