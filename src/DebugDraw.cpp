@@ -180,16 +180,24 @@ float ComputeFPS()
   return -1.0f;
 }
 
+void DebugDraw::setMouseCoordinates(const float& x, const float& y)
+{
+  m_mouse_coordinates.x = x;
+  m_mouse_coordinates.y = y;
+}
+
 void DebugDraw::DrawMouseCoordinates()
 {
   const sf::View& view = m_window.getView();
   const sf::Vector2f& viewCenter = view.getCenter();
   const sf::Vector2f& viewSize = view.getSize();
-  sf::Vector2f mousePos(
+  sf::Vector2f textPosition(
       viewCenter.x - viewSize.x/2,
       viewCenter.y - viewSize.y/2);
-  m_mouse_coordinate_box.setPosition(mousePos);
-  m_mouse_coordinate_box.updateText(mousePos.x, mousePos.y);
+  m_mouse_coordinate_box.setPosition(textPosition);
+  const sf::Vector2u& window_size = m_window.getSize();
+  const sf::Vector2f text_scale(viewSize.x/window_size.x, viewSize.y/window_size.y);
+  m_mouse_coordinate_box.updateText(m_mouse_coordinates, text_scale);
   m_window.draw(m_mouse_coordinate_box);
 }
 

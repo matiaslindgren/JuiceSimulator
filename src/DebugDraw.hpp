@@ -63,8 +63,11 @@ class DebugDraw : public b2Draw
 
     Grid& getGrid();
 
+    void setMouseCoordinates(const float& x, const float& y);
+
   private:
     sf::RenderWindow& m_window;
+    sf::Vector2f m_mouse_coordinates;
     TextBox m_mouse_coordinate_box;
     Grid m_grid;
 

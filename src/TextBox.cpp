@@ -13,17 +13,13 @@ TextBox::TextBox(const sf::Vector2f& scale)
 }
 
 
-void TextBox::updateText(const float& x, const float& y)
+void TextBox::updateText(const sf::Vector2f& position, const sf::Vector2f& scale)
 {
   std::stringstream ss;
-  ss << x << ", " << std::setprecision(2) << y;
+  ss << position.x << ", " << std::setprecision(2) << position.y;
   text.setString(ss.str());
-}
+  text.setScale(scale);
 
-void TextBox::updatePosition(const float& x, const float& y)
-{
-  this->updateText(x, y);
-  text.setPosition(x, y);
 }
 
 void TextBox::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -20,7 +20,7 @@ constexpr auto positionIterations = 2;
 constexpr auto particleIterations = 2;
 
 
-void handleEvents(sf::RenderWindow& window)
+void handleEvents(sf::RenderWindow& window, DebugDraw& debugDraw)
 {
   sf::Event event;
   while (window.pollEvent(event))
@@ -56,6 +56,10 @@ void handleEvents(sf::RenderWindow& window)
           break;
       }
       window.setView(view);
+    } else if (event.type == sf::Event::MouseMoved)
+    {
+      const sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+      debugDraw.setMouseCoordinates(mouse_position.x, mouse_position.y);
     }
   }
 }
@@ -125,33 +129,31 @@ int main(int argc, char** argv) {
   {
     sf::Vector2f corners[4];
 
-    for (auto j = 0; j < 10; j++)
+    for (auto i = 0; i < 100; i++)
     {
-      for (auto i = 0; i < 100; i++)
-      {
-        float x = -10 + (rand() % 30);
-        float y = -20 - (rand() % 300);
-        corners[0] = sf::Vector2f(x, y);
-        corners[1] = sf::Vector2f(x + 0.5, y);
-        corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
-        corners[3] = sf::Vector2f(x, y + 0.5);
-        world.CreateShape(corners, 4, b2_dynamicBody);
-      }
+      auto x = 5 + rand() % 16 - 8;
+      auto y = -5 + rand() % 16 - 8;
+      corners[0] = sf::Vector2f(x, y);
+      corners[1] = sf::Vector2f(x + 0.5, y);
+      corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
+      corners[3] = sf::Vector2f(x, y + 0.5);
+      world.CreateShape(corners, 4, b2_dynamicBody);
     }
 
     {
-      corners[0] = sf::Vector2f(-2.0f, 12.0f);
-      corners[1] = sf::Vector2f(8.0f, 12.0f);
-      corners[2] = sf::Vector2f(8.0f, 12.5f);
-      corners[3] = sf::Vector2f(-2.0f, 12.5f);
+      corners[0] = sf::Vector2f(-5.0f, 12.0f);
+      corners[1] = sf::Vector2f(9.0f, 12.0f);
+      corners[2] = sf::Vector2f(9.0f, 12.5f);
+      corners[3] = sf::Vector2f(-5.0f, 12.5f);
       world.CreateShape(corners, 4, b2_staticBody);
     }
+
   }
 
   unsigned int drawnFrames = 0;
   while (window.isOpen())
   {
-    handleEvents(window);
+    handleEvents(window, debug_draw);
 
     window.clear(sf::Color::White);
 
