@@ -36,16 +36,16 @@ World::~World()
   delete destruction_listener_;
 }
 
-void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertexCount, b2BodyType body_type)
+void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type)
 {
-  b2Vec2 b2_vertices[vertexCount];
-  for (auto i = 0; i < vertexCount; i++)
+  b2Vec2 b2_vertices[vertex_count];
+  for (auto i = 0; i < vertex_count; i++)
   {
     b2_vertices[i].Set(corners[i].x, -corners[i].y);
   }
 
   b2PolygonShape shape;
-  shape.Set(b2_vertices, vertexCount);
+  shape.Set(b2_vertices, vertex_count);
 
   b2BodyDef body_def;
   body_def.type = body_type;
@@ -57,7 +57,7 @@ void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex
 
   b2Body* body = this->CreateBody(&body_def);
   body->CreateFixture(&fixture_def);
-  body->SetUserData(new Polygon(corners, vertexCount));
+  body->SetUserData(new Polygon(corners, vertex_count));
 }
 
 void World::Step(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations, sf::RenderTarget& renderTarget)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(Game)
 set(Game_VERSION_MAJOR 0)
 set(Game_VERSION_MINOR 1)
@@ -7,15 +7,17 @@ set(EXECUTABLE_NAME "game.exe")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(SOURCES
+  Adapter.cpp
+  DebugDraw.cpp
+  DebugLines.cpp
   Main.cpp
-  World.cpp
   Polygon.cpp
   TextBox.cpp
-  DebugLines.cpp
-  DebugDraw.cpp
-  Adapter.cpp
+  World.cpp
   WorldCallbacks.cpp
 )
+
+set(CMAKE_CXX_STANDARD 11)
 
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
@@ -33,8 +35,6 @@ target_link_libraries(
   sfml-system
   sfml-window
 )
-
-target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_constexpr)
 
 
 # TESTS
