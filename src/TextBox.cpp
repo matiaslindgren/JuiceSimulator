@@ -2,14 +2,13 @@
 #include <iomanip>
 #include "TextBox.hpp"
 
-TextBox::TextBox(const sf::Vector2f& scale)
+TextBox::TextBox()
 {
   font.loadFromFile("media/fonts/UbuntuMono-R.ttf");
   text.setFont(font);
-  text.setString("-,-");
+  text.setString("N/A, N/A");
   text.setColor(sf::Color::Black);
-  text.setCharacterSize(22);
-  text.setScale(scale.x, scale.y);
+  text.setCharacterSize(18);
 }
 
 

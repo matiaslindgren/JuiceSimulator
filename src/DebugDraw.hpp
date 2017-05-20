@@ -31,7 +31,10 @@
 class DebugDraw : public b2Draw
 {
   public:
-    DebugDraw(sf::RenderWindow& window, const sf::Vector2f& textScale) : window_(window), mouse_coordinate_box_(textScale) {};
+    DebugDraw(sf::RenderWindow& window) : window_(window)
+    {
+      DrawMouseCoordinates();
+    }
 
     void DrawPolygon(const b2Vec2* vertices, int32 vertex_count, const b2Color& color);
 

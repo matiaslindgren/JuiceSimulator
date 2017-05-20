@@ -160,6 +160,8 @@ void DebugDraw::DrawMouseCoordinates()
   const sf::Vector2f& viewSize = view.getSize();
   sf::Vector2f textPosition(viewCenter.x - viewSize.x/2,
                             viewCenter.y - viewSize.y/2);
+  mouse_coordinate_box_.setPosition(textPosition);
+
   const sf::Vector2u& window_size = window_.getSize();
   const sf::Vector2f text_scale(viewSize.x/window_size.x, viewSize.y/window_size.y);
   mouse_coordinate_box_.UpdateText(mouse_coordinates_, text_scale);

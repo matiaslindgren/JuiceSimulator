@@ -6,7 +6,7 @@
 class TextBox : public sf::Drawable, public sf::Transformable
 {
   public:
-    TextBox(const sf::Vector2f& scale);
+    TextBox();
 
     void UpdateText(const sf::Vector2f& position, const sf::Vector2f& scale);
 
