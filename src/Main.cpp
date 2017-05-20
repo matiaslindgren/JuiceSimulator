@@ -63,6 +63,7 @@ void handleEvents(sf::RenderWindow& window)
 int main(int argc, char** argv) {
   bool disableRendering;
   bool enablePhysicsDebug;
+  unsigned int gameLoopLimit;
   try
   {
     TCLAP::CmdLine cmd("a game - work in progress", ' ', "0.1");
@@ -72,11 +73,15 @@ int main(int argc, char** argv) {
     TCLAP::SwitchArg physicsDebugSwitch(
         "p", "physics-debug", "Render Box2D physics entities instead of SFML shapes and textures.",
         cmd, false);
+    TCLAP::ValueArg<unsigned int> gameLoopLimitArg(
+        "l", "loop-limit", "The amount of rendered window frames. The render window will be closed and application will terminate after this amount of frames have been rendered, regardless of application state.",
+        false, 0, "unsigned integer", cmd);
 
     cmd.parse(argc, argv);
 
     disableRendering = renderSwitch.getValue();
     enablePhysicsDebug = physicsDebugSwitch.getValue();
+    gameLoopLimit = gameLoopLimitArg.getValue();
 
   } catch (TCLAP::ArgException& e)
   {
@@ -155,6 +160,9 @@ int main(int argc, char** argv) {
       world.DrawDebugData();
 
     window.display();
+
+    if (gameLoopLimit && drawnFrames++ > gameLoopLimit)
+      window.close();
   }
 
   return EXIT_SUCCESS;
