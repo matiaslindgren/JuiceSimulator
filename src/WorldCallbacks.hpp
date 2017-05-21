@@ -29,5 +29,15 @@ class DestructionListener : public b2DestructionListener
     }
 };
 
+class ContactListener : public b2ContactListener
+{
+  public:
+    void BeginContact(b2Contact*);
+    void EndContact(b2Contact*);
+    void BeginContact(b2ParticleSystem*, b2ParticleBodyContact*);
+    void EndContact(b2Fixture*, b2ParticleSystem*, int32);
+    void BeginContact(b2ParticleSystem*, b2ParticleContact*);
+    void EndContact(b2ParticleSystem*, int32, int32);
+};
 
 #endif // WORLDCALLBACKS.HPP
