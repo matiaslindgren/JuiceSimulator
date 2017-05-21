@@ -180,18 +180,22 @@ DebugLines& DebugDraw::get_debuglines()
 
 void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count)
 {
+  static constexpr float k_segments = 5.0f;
+  static constexpr float k_increment = 2.0f * b2_pi / k_segments;
   for (auto i = 0; i < count; i++)
   {
-    this->DrawSolidCircle(centers[i], radius, centers[i], b2Color(colors[i].r, colors[i].g, colors[i].b));
-
-    /* points[i].position.x = centers[i].x; */
-    /* points[i].position.y = -centers[i].y; */
-    /* points[i].color.r = 255*(1 - colors[i].r); */
-    /* points[i].color.g = 255*(1 - colors[i].g); */
-    /* points[i].color.b = 255*(1 - colors[i].b); */
-
+    float theta = 0.0f;
+    sf::VertexArray sfml_vertices(sf::TrianglesFan, k_segments+2);
+    const sf::Color& sfml_color = ConvertColor(colors[i]);
+    sf::Vector2f sfml_center = ConvertVector(centers[i]);
+    for (auto i = 0; i < k_segments + 2; i++)
+    {
+      sfml_vertices[i].position = sfml_center + radius*sf::Vector2f(cosf(theta), sinf(theta));
+      sfml_vertices[i].color = sfml_color;
+      theta += k_increment;
+    }
+    window_.draw(sfml_vertices);
   }
-  /* window_.draw(points); */
 }
 
 
