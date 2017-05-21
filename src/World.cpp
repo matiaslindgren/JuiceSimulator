@@ -78,7 +78,12 @@ void World::CreateParticleSystem(const b2Vec2& start_pos)
   std::cout << "particle_system_->CreateParticleGroup" << std::endl;
 }
 
-void World::Step(const float& timeStep, const int& velocityIterations, const int& positionIterations, const int& particleIterations, sf::RenderTarget& renderTarget)
+void World::Step(const float&      timeStep,
+                 const int&        velocityIterations,
+                 const int&        positionIterations,
+                 const int&        particleIterations,
+                 sf::RenderTarget& renderTarget,
+                 const bool&       disable_sfml_graphics)
 {
   // Calculate a time step in the Box2D world
   b2World::Step(timeStep, velocityIterations, positionIterations, particleIterations);

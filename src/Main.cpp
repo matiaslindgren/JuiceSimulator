@@ -55,6 +55,7 @@ void HandleEvents(sf::RenderWindow& window, DebugDraw& debug_draw)
 int main(int argc, char** argv) {
   bool disable_rendering;
   bool enable_physics_debug;
+  bool disable_sfml_graphics;
   unsigned int game_loop_limit;
   try
   {
@@ -63,7 +64,10 @@ int main(int argc, char** argv) {
         "r", "no-rendering", "Disable all rendering.",
         cmd, false);
     TCLAP::SwitchArg physics_debug_switch(
-        "p", "physics-debug", "Render Box2D physics entities instead of SFML shapes and textures.",
+        "p", "physics-debug", "Render Box2D physics entities.",
+        cmd, false);
+    TCLAP::SwitchArg disable_sfml_graphics_switch(
+        "d", "no-sfml-graphics", "Disable SFML graphics rendering. Does not affect physics debug rendering.",
         cmd, false);
     TCLAP::ValueArg<unsigned int> game_loop_limit_arg(
         "l", "loop-limit", "The amount of rendered window frames. The render window will be closed and application will terminate after this amount of frames have been rendered, regardless of application state.",
@@ -74,6 +78,7 @@ int main(int argc, char** argv) {
     disable_rendering = render_switch.getValue();
     enable_physics_debug = physics_debug_switch.getValue();
     game_loop_limit = game_loop_limit_arg.getValue();
+    disable_sfml_graphics = disable_sfml_graphics_switch.getValue();
 
   } catch (TCLAP::ArgException& e)
   {
@@ -161,7 +166,7 @@ int main(int argc, char** argv) {
 
     window.clear(sf::Color::White);
 
-    world.Step(kTimeStep, kVelocityIterations, kPositionIterations, kParticleIterations, window);
+    world.Step(kTimeStep, kVelocityIterations, kPositionIterations, kParticleIterations, window, disable_sfml_graphics);
 
     if (enable_physics_debug)
       world.DrawDebugData();
