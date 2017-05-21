@@ -111,6 +111,18 @@ void World::Step(const float&      timeStep,
     body = nextBody;
   }
 
+  b2ParticleSystem* particle_system = GetParticleSystemList();
+
+  while (particle_system)
+  {
+    b2ParticleSystem* next_particle_system = particle_system->GetNext();
+    DestroyOutOfBoundsParticles(particle_system);
+    if (!disable_sfml_graphics)
+    {
+      DrawParticleSystem(renderTarget, particle_system);
+    }
+    particle_system = next_particle_system;
+  }
 }
 
 bool World::PositionOutOfBounds(const b2Vec2& position) const
@@ -141,5 +153,53 @@ void World::DrawDebugData()
   this->debug_draw_->DrawMouseCoordinates();
   this->debug_draw_->DrawDebugLines();
   b2World::DrawDebugData();
+}
+
+void World::DrawParticleSystem(sf::RenderTarget& target, b2ParticleSystem* particle_system)
+{
+  const b2Vec2* positions = particle_system->GetPositionBuffer();
+  const b2ParticleColor* colors = particle_system->GetColorBuffer();
+  const auto particle_count = particle_system->GetParticleCount();
+  const auto particle_radius = particle_system->GetRadius();
+
+  static constexpr auto k_segments = 10;
+  static constexpr float k_increment = 2.0f * b2_pi / (float)k_segments;
+  sf::Vector2f center_offset_points[k_segments + 2];
+  float theta = 0.0f;
+  for (auto i = 0; i < k_segments + 2; i++)
+  {
+    center_offset_points[i] = particle_radius*sf::Vector2f(cosf(theta), sinf(theta));
+    theta += k_increment;
+  }
+
+  sf::VertexArray sfml_vertices(sf::TrianglesFan, k_segments+2);
+  for (auto i = 0; i < particle_count; i++)
+  {
+    if (PositionOutOfView(positions[i]))
+      continue;
+    const sf::Color& sfml_color = ConvertColor(colors[i]);
+    sf::Vector2f sfml_center = ConvertVector(positions[i]);
+    for (auto i = 0; i < k_segments + 2; i++)
+    {
+      sfml_vertices[i].position = sfml_center + center_offset_points[i];
+      sfml_vertices[i].color = sfml_color;
+    }
+    target.draw(sfml_vertices);
+  }
+}
+
+
+void World::DestroyOutOfBoundsParticles(b2ParticleSystem* particle_system) const
+{
+  const b2Vec2* particle_positions = particle_system->GetPositionBuffer();
+  const auto particle_count = particle_system->GetParticleCount();
+  for (auto i = 0; i < particle_count; i++)
+  {
+    if (PositionOutOfBounds(particle_positions[i]))
+    {
+      auto active_flags = particle_system->GetParticleFlags(i);
+      particle_system->SetParticleFlags(i, active_flags | b2_zombieParticle);
+    }
+  }
 }
 
