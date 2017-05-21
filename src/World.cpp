@@ -4,7 +4,6 @@
 #include "World.hpp"
 #include "DebugDraw.hpp"
 #include "Polygon.hpp"
-#include "WorldCallbacks.hpp"
 
 
 World::World(const float& gravity_x,
@@ -14,13 +13,11 @@ World::World(const float& gravity_x,
              const int& south_edge,
              const int& west_edge)
   : b2World(b2Vec2(gravity_x, -gravity_y)),
-    destruction_listener_(new DestructionListener()),
     north_edge_(north_edge),
     east_edge_(east_edge),
     south_edge_(south_edge),
     west_edge_(west_edge)
 {
-  b2World::SetDestructionListener(destruction_listener_);
 }
 
 World::~World()
@@ -33,7 +30,6 @@ World::~World()
     body->SetUserData(nullptr);
     body = nextBody;
   }
-  delete destruction_listener_;
 }
 
 void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type)

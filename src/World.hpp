@@ -34,7 +34,6 @@ class World : public b2World
     DebugDraw* debug_draw_;
     b2ParticleSystem* particle_system_;
     b2ParticleGroup* particle_group_;
-    b2DestructionListener* destruction_listener_;
     const int north_edge_;
     const int east_edge_;
     const int south_edge_;

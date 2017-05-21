@@ -5,6 +5,7 @@
 #include <tclap/CmdLine.h>
 #include "DebugDraw.hpp"
 #include "World.hpp"
+#include "WorldCallbacks.hpp"
 
 
 void HandleEvents(sf::RenderWindow& window, DebugDraw& debug_draw)
@@ -81,7 +82,10 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 8.0f, -20, 20, 20, -20);
+  World world(0.0f, 8.0f, -50, 50, 50, -50);
+
+  DestructionListener destruction_listener;
+  world.SetDestructionListener(&destruction_listener);
 
   constexpr auto kWindowWidth = 900;
   constexpr auto kWindowHeight = 600;
