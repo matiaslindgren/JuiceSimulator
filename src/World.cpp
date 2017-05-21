@@ -92,31 +92,37 @@ void World::Step(const float&      timeStep,
 
   while (body)
   {
-    Polygon* polygon = static_cast<Polygon*>(body->GetUserData());
+    void* user_data = body->GetUserData();
     b2Body* nextBody = body->GetNext();
-    if (BodyOutOfBounds(*body))
+    const b2Vec2& body_position = body->GetWorldCenter();
+    if (PositionOutOfBounds(body_position))
     {
-      delete polygon;
-      body->SetUserData(nullptr);
-      this->DestroyBody(body);
-      body = nextBody;
-      continue;
+      DestroyBody(body);
     }
-    polygon->ApplyPhysics(body->GetTransform());
-    renderTarget.draw(*polygon);
-    polygon = nullptr;
+    else if (user_data)
+    {
+      Polygon* polygon = static_cast<Polygon*>(user_data);
+      polygon->ApplyPhysics(body->GetTransform());
+      if (!disable_sfml_graphics && !PositionOutOfView(body_position))
+      {
+        renderTarget.draw(*polygon);
+      }
+    }
     body = nextBody;
   }
 
 }
 
-bool World::BodyOutOfBounds(const b2Body& body) const
+bool World::PositionOutOfBounds(const b2Vec2& position) const
 {
-  const b2Vec2& bodyWorldCenter = body.GetWorldCenter();
-  return -bodyWorldCenter.y < north_edge_ ||
-         -bodyWorldCenter.y > south_edge_ ||
-         bodyWorldCenter.x < west_edge_ ||
-         bodyWorldCenter.x > east_edge_;
+  return -position.y > south_edge_ ||
+         position.x < west_edge_ ||
+         position.x > east_edge_;
+}
+
+bool World::PositionOutOfView(const b2Vec2& position) const
+{
+  return -position.y < north_edge_;
 }
 
 void World::SetDebugDraw(DebugDraw* debug_draw)

@@ -18,13 +18,18 @@ class World : public b2World
 
     void CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type);
 
+    void DestroyOutOfBoundsParticles(b2ParticleSystem*) const;
+
+    bool PositionOutOfBounds(const b2Vec2&) const;
+    bool PositionOutOfView(const b2Vec2&) const;
+
     using b2World::CreateParticleSystem;
     void CreateParticleSystem(const b2Vec2&);
 
-    bool BodyOutOfBounds(const b2Body&) const;
+    void DrawParticleSystem(sf::RenderTarget& target, b2ParticleSystem* particle_system);
 
     using b2World::Step;
-    void Step(const float&, const int&, const int&, const int&, sf::RenderTarget&);
+    void Step(const float&, const int&, const int&, const int&, sf::RenderTarget&, const bool&);
 
     using b2World::DrawDebugData;
     void DrawDebugData();
@@ -32,8 +37,6 @@ class World : public b2World
 
   private:
     DebugDraw* debug_draw_;
-    b2ParticleSystem* particle_system_;
-    b2ParticleGroup* particle_group_;
     const int north_edge_;
     const int east_edge_;
     const int south_edge_;
