@@ -8,6 +8,12 @@ sf::Color ConvertColor(const b2Color& b2_color)
   return sf::Color(b2_color.r*255, b2_color.g*255, b2_color.b*255);
 }
 
+sf::Color ConvertColor(const b2ParticleColor& b2_particle_color)
+{
+  return sf::Color(b2_particle_color.r, b2_particle_color.g,
+                   b2_particle_color.b, 255 - b2_particle_color.a);
+}
+
 sf::Vector2f ConvertVector(const b2Vec2& b2_vector)
 {
   return sf::Vector2f(b2_vector.x, -b2_vector.y);
