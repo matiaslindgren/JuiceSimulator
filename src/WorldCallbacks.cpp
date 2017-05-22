@@ -11,38 +11,3 @@ void DestructionListener::SayGoodbye(b2Fixture* fixture)
   }
 }
 
-void ContactListener::BeginContact(b2Contact* contact)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void BeginContact(b2Contact*)" << std::endl;
-}
-
-void ContactListener::EndContact(b2Contact* contact)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void EndContact(b2Contact*)" << std::endl;
-}
-
-void ContactListener::BeginContact(b2ParticleSystem* particle_system, b2ParticleBodyContact* particle_body_contact)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void BeginContact(b2ParticleSystem*, b2ParticleBodyContact*)" << std::endl;
-}
-
-void ContactListener::EndContact(b2Fixture* fixture, b2ParticleSystem* particle_system, int32 particle_index)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void EndContact(b2Fixture*, b2ParticleSystem*, int32)" << std::endl;
-}
-
-void ContactListener::BeginContact(b2ParticleSystem*, b2ParticleContact*)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void BeginContact(b2ParticleSystem*, b2ParticleContact*)" << std::endl;
-}
-
-void ContactListener::EndContact(b2ParticleSystem*, int32, int32)
-{
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << " void EndContact(b2ParticleSystem*, int32, int32)" << std::endl;
-}
