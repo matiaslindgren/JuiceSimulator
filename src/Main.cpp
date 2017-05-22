@@ -88,18 +88,20 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 8.0f, -50, 50, 50, -50);
+  World world(0.0f, 10.0f, -50, 50, 50, -50);
 
   DestructionListener destruction_listener;
   world.SetDestructionListener(&destruction_listener);
 
-  constexpr auto kWindowWidth = 900;
-  constexpr auto kWindowHeight = 600;
-  constexpr auto kViewWidth = kWindowWidth/30.0f;
-  constexpr auto kViewHeight = kWindowHeight/30.0f;
-  constexpr auto kFps = 60;
-  constexpr auto kAntialiasinglevel = 4;
+  /* ContactListener contact_listener; */
+  /* world.SetContactListener(&contact_listener); */
 
+  static constexpr auto kWindowWidth = 900;
+  static constexpr auto kWindowHeight = 600;
+  static constexpr auto kViewWidth = kWindowWidth/10.0f;
+  static constexpr auto kViewHeight = kWindowHeight/10.0f;
+  static constexpr auto kFps = 60;
+  static constexpr auto kAntialiasinglevel = 4;
 
   sf::RenderWindow window;
   if (!disable_rendering)
@@ -116,49 +118,36 @@ int main(int argc, char** argv) {
     window.setView(view);
   }
 
-  DebugDraw debug_draw(window, sf::Vector2f(kViewWidth/kWindowWidth, kViewHeight/kWindowHeight));
+  DebugDraw debug_draw(window);
   if (enable_physics_debug)
   {
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
-    flags += b2Draw::e_jointBit;
-    flags += b2Draw::e_aabbBit;
-    flags += b2Draw::e_pairBit;
-    flags += b2Draw::e_centerOfMassBit;
     flags += b2Draw::e_particleBit;
+
+    /* flags += b2Draw::e_jointBit; */
+    /* flags += b2Draw::e_aabbBit; */
+    /* flags += b2Draw::e_pairBit; */
+    /* flags += b2Draw::e_centerOfMassBit; */
+
     debug_draw.SetFlags(flags);
-    world.SetDebugDraw(&debug_draw);
+    world.set_debug_draw(&debug_draw);
   }
 
 
+  for (auto i = 0; i < 3; i++)
   {
-    sf::Vector2f corners[4];
-
-    for (auto i = 0; i < 100; i++)
-    {
-      auto x = 5 + rand() % 16 - 8;
-      auto y = -5 + rand() % 16 - 8;
-      corners[0] = sf::Vector2f(x, y);
-      corners[1] = sf::Vector2f(x + 0.5, y);
-      corners[2] = sf::Vector2f(x + 0.5, y + 0.5);
-      corners[3] = sf::Vector2f(x, y + 0.5);
-      world.CreateShape(corners, 4, b2_dynamicBody);
-    }
-
-    {
-      corners[0] = sf::Vector2f(-5.0f, 12.0f);
-      corners[1] = sf::Vector2f(9.0f, 12.0f);
-      corners[2] = sf::Vector2f(9.0f, 12.5f);
-      corners[3] = sf::Vector2f(-5.0f, 12.5f);
-      world.CreateShape(corners, 4, b2_staticBody);
-    }
-
+    world.CreateDispenser(Juice(b2ParticleColor(250 - 50*i, 50*i, 250*i%2, 50)), b2Vec2(-25 + 30*i, -5));
+    world.CreateItem(ItemTypes(k_Cup), b2Vec2(-27 + 30*i, 0));
   }
 
-  constexpr auto kTimeStep = 1.0f / 60.0f;
-  constexpr auto kVelocityIterations = 6;
-  constexpr auto kPositionIterations = 2;
-  constexpr auto kParticleIterations = 2;
+  world.CreateItem(ItemTypes(k_Cup), b2Vec2(-27+15, -200));
+  world.CreateItem(ItemTypes(k_Counter), b2Vec2(-30, 12));
+
+  constexpr auto k_TimeStep = 1.0f / 30.0f;
+  constexpr auto k_VelocityIterations = 6;
+  constexpr auto k_PositionIterations = 3;
+  constexpr auto k_ParticleIterations = 3;
 
   unsigned int drawnFrames = 0;
   while (window.isOpen())
@@ -167,7 +156,9 @@ int main(int argc, char** argv) {
 
     window.clear(sf::Color::White);
 
-    world.Step(kTimeStep, kVelocityIterations, kPositionIterations, kParticleIterations, window, disable_sfml_graphics);
+    world.Step(k_TimeStep, k_VelocityIterations,
+               k_PositionIterations, k_ParticleIterations,
+               window, disable_sfml_graphics);
 
     if (enable_physics_debug)
       world.DrawDebugData();
