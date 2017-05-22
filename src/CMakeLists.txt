@@ -10,6 +10,7 @@ set(SOURCES
   Adapter.cpp
   DebugDraw.cpp
   DebugLines.cpp
+  DrawableParticleSystem.cpp
   Main.cpp
   Polygon.cpp
   TextBox.cpp
