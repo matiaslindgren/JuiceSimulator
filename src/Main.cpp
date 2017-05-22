@@ -6,6 +6,7 @@
 #include "DebugDraw.hpp"
 #include "World.hpp"
 #include "WorldCallbacks.hpp"
+#include "LiquidDefinitions.hpp"
 
 
 void HandleEvents(sf::RenderWindow& window, DebugDraw& debug_draw)
