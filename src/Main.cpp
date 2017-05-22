@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 10.0f, -50, 50, 50, -50);
+  World world(0.0f, 9.81f, -50, 50, 50, -50);
 
   DestructionListener destruction_listener;
   world.SetDestructionListener(&destruction_listener);
@@ -141,8 +141,9 @@ int main(int argc, char** argv) {
     world.CreateItem(ItemTypes(k_Cup), b2Vec2(-27 + 30*i, 0));
   }
 
-  world.CreateItem(ItemTypes(k_Cup), b2Vec2(-27+15, -200));
   world.CreateItem(ItemTypes(k_Counter), b2Vec2(-30, 12));
+  world.CreateItem(ItemTypes(k_Counter), b2Vec2(0, 12));
+  world.CreateItem(ItemTypes(k_Counter), b2Vec2(30, 12));
 
   constexpr auto k_TimeStep = 1.0f / 30.0f;
   constexpr auto k_VelocityIterations = 6;
