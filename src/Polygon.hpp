@@ -4,11 +4,12 @@
 #include <Box2D/Box2D.h>
 
 
-#include <iostream>
 class Polygon : public sf::Drawable, public sf::Transformable
 {
   public:
-    Polygon(const sf::Vector2f corners[], const unsigned int& vertex_count);
+    Polygon(const b2Vec2 vertices[],
+            const unsigned int& vertex_count,
+            const sf::Color& color);
     void ApplyPhysics(const b2Transform& b2_transform);
 
   private:

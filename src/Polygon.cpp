@@ -2,15 +2,18 @@
 #include "Adapter.hpp"
 
 
-Polygon::Polygon(const sf::Vector2f corners[], const unsigned int& vertex_count)
+
+Polygon::Polygon(const b2Vec2 vertices[],
+                 const unsigned int& vertex_count,
+                 const sf::Color& color)
   : vertices_(sf::VertexArray(sf::TrianglesFan, vertex_count))
 {
   for (auto i = 0; i < vertex_count; i++)
   {
-    vertices_[i].position = corners[i];
-    vertices_[i].color = sf::Color(155, 200, 180, 150);
+    vertices_[i].position = ConvertVector(vertices[i]);
+    vertices_[i].color = color;
   }
-};
+}
 
 void Polygon::ApplyPhysics(const b2Transform& b2_transform)
 {
@@ -21,7 +24,6 @@ void Polygon::ApplyPhysics(const b2Transform& b2_transform)
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   states.transform *= getTransform();
-  states.texture = nullptr;
   target.draw(vertices_, states);
 }
 

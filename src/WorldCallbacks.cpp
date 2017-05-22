@@ -3,15 +3,11 @@
 
 void DestructionListener::SayGoodbye(b2Fixture* fixture)
 {
-  b2Body* body = fixture->GetBody();
-  if (body)
+  void* user_data = fixture->GetUserData();
+  if (user_data)
   {
-    void* user_data = body->GetUserData();
-    if (user_data)
-    {
-      delete static_cast<Polygon*>(user_data);
-      body->SetUserData(nullptr);
-    }
+    delete static_cast<Polygon*>(user_data);
+    fixture->SetUserData(nullptr);
   }
 }
 

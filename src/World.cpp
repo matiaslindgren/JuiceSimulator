@@ -5,6 +5,8 @@
 #include "DebugDraw.hpp"
 #include "Polygon.hpp"
 
+#include "Adapter.hpp"
+
 
 World::World(const float& gravity_x,
              const float& gravity_y,
@@ -25,102 +27,246 @@ World::~World()
   b2Body* body = b2World::GetBodyList();
   while (body)
   {
-    b2Body* nextBody = body->GetNext();
-    delete static_cast<Polygon*>(body->GetUserData());
-    body->SetUserData(nullptr);
-    body = nextBody;
+    b2Body* next_body = body->GetNext();
+    b2Fixture* fixture = body->GetFixtureList();
+    while (fixture)
+    {
+      b2Fixture* next_fixture = fixture->GetNext();
+      delete static_cast<Polygon*>(fixture->GetUserData());
+      fixture->SetUserData(nullptr);
+      fixture = next_fixture;
+    }
+    body = next_body;
   }
 }
 
-void World::CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type)
+void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position)
 {
-  b2Vec2 b2_vertices[vertex_count];
-  for (auto i = 0; i < vertex_count; i++)
+  switch (item_type)
   {
-    b2_vertices[i].Set(corners[i].x, -corners[i].y);
+    case k_Cup:
+      {
+        b2BodyDef body_def;
+        body_def.type = b2_dynamicBody;
+
+        b2Body* body = this->CreateBody(&body_def);
+
+        static constexpr auto cup_height = 7;
+        static constexpr auto edge_thickness = 0.5f;
+        static constexpr auto side_slope = 0.2f;
+
+        b2Vec2 left_side[] = {
+          b2Vec2(0, cup_height),
+          b2Vec2(edge_thickness, cup_height),
+          b2Vec2(edge_thickness + side_slope, 0),
+          b2Vec2(side_slope, 0)
+        };
+
+        b2Vec2 right_side[4];
+        for (auto i = 0; i < 4; i++)
+        {
+          right_side[i] = left_side[i] + b2Vec2(cup_height/2, 0);
+        }
+        right_side[0].x += 2*side_slope;
+        right_side[1].x += 2*side_slope;
+
+        b2Vec2 bottom[] = {
+          left_side[3],
+          right_side[2],
+          right_side[2] - b2Vec2(0, edge_thickness),
+          left_side[3] - b2Vec2(0, edge_thickness)
+        };
+
+        b2Vec2* fixture_vertices[] = {
+          left_side,
+          right_side,
+          bottom
+        };
+
+        for (auto i = 0; i < 3; i++)
+        {
+          for (auto j = 0; j < 4; j++)
+          {
+            fixture_vertices[i][j].x += position.x;
+            fixture_vertices[i][j].y += -(position.y + cup_height);
+          }
+        }
+
+        for (auto i = 0; i < 3; i++)
+        {
+          b2PolygonShape shape;
+          shape.Set(fixture_vertices[i], 4);
+
+          b2FixtureDef fixture_def;
+          fixture_def.shape = &shape;
+          fixture_def.density = 1.5f;
+          fixture_def.restitution = 0;
+          b2Fixture* fixture = body->CreateFixture(&fixture_def);
+          fixture->SetUserData(new Polygon(fixture_vertices[i], 4, sf::Color(50, 50, 250, 150)));
+        }
+        break;
+      }
+    case k_Counter:
+      {
+        b2BodyDef body_def;
+        body_def.type = b2_staticBody;
+
+        static constexpr auto width = 60;
+        static constexpr auto height = 1;
+
+        b2Body* body = this->CreateBody(&body_def);
+
+        b2Vec2 vertices[] = {
+          b2Vec2(0, 0),
+          b2Vec2(width, 0),
+          b2Vec2(width, height),
+          b2Vec2(0, height)
+        };
+
+        for (auto i = 0; i < 4; i++)
+        {
+          vertices[i] += position;
+          vertices[i].y *= -1;
+        }
+
+        {
+          b2PolygonShape shape;
+          shape.Set(vertices, 4);
+
+          b2FixtureDef fixture_def;
+          fixture_def.shape = &shape;
+          b2Fixture* fixture = body->CreateFixture(&fixture_def);
+          fixture->SetUserData(new Polygon(vertices, 4, sf::Color(150, 150, 150, 50)));
+        }
+        break;
+      }
+    default:
+      break;
   }
 
-  b2PolygonShape shape;
-  shape.Set(b2_vertices, vertex_count);
+}
+
+void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b2Vec2& position)
+{
+  b2ParticleSystem* particle_system = GetParticleSystemList();
+  if (!particle_system)
+  {
+    const b2ParticleSystemDef particle_system_def;
+    particle_system = b2World::CreateParticleSystem(&particle_system_def);
+    particle_system->SetGravityScale(2.0f);
+    particle_system->SetDensity(1.0f);
+    particle_system->SetRadius(0.30f);
+    drawable_liquids_.emplace_back(particle_system->GetRadius());
+  }
+
+  dispensers_.emplace_back();
+  RadialEmitter& dispenser = dispensers_.back();
+
+  particle_system->CreateParticleGroup(liquid_definition);
+
+  auto particle_radius = particle_system->GetRadius();
+  dispenser.SetParticleSystem(particle_system);
+  dispenser.SetColor(liquid_definition.color);
+  dispenser.SetParticleFlags(liquid_definition.flags);
+  dispenser.SetPosition(b2Vec2(position.x, -position.y));
+  dispenser.SetSize(b2Vec2(2.1*particle_radius, 5));
+  dispenser.SetSpeed(0);
+  dispenser.SetEmitRate(80);
 
   b2BodyDef body_def;
-  body_def.type = body_type;
+  body_def.type = b2_staticBody;
+
+  b2Body* body = this->CreateBody(&body_def);
+
+  auto height = 35*particle_radius;
+  auto width = 8*particle_radius;
+
+  b2Vec2 nozzle_vertices[] = {
+    b2Vec2(0, 0),
+    b2Vec2(0, height),
+    b2Vec2(width, height),
+    b2Vec2(width, 0),
+  };
+
+  for (auto i = 0; i < 4; i++)
+  {
+    nozzle_vertices[i].x += position.x - width/2;
+    nozzle_vertices[i].y += -(position.y + height/3);
+  }
+
+  b2ChainShape shape;
+  shape.CreateChain(nozzle_vertices, 4);
 
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
-  fixture_def.density = 10.0f;
-  fixture_def.restitution = 0.1f;
+  b2Fixture* fixture = body->CreateFixture(&fixture_def);
+  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 50)));
 
-  b2Body* body = this->CreateBody(&body_def);
-  body->CreateFixture(&fixture_def);
-  body->SetUserData(new Polygon(corners, vertex_count));
 }
 
-void World::CreateParticleSystem(const b2Vec2& start_pos)
-{
-  std::cout << "CreateParticleSystem" << std::endl;
-  const b2ParticleSystemDef particle_system_def;
-	particle_system_ = b2World::CreateParticleSystem(&particle_system_def);
-  std::cout << "b2World::CreateParticleSystem" << std::endl;
-	particle_system_->SetGravityScale(40.0f);
-	particle_system_->SetDensity(0.2f);
-	particle_system_->SetRadius(0.15f);
-  particle_system_->SetDamping(2.0001f);
-
-  b2ParticleGroupDef particle_group_def;
-  b2PolygonShape b2_polygon;
-  b2_polygon.SetAsBox(5.5f, 5.5f);
-  particle_group_def.shape = &b2_polygon;
-  particle_group_def.flags = b2_waterParticle;
-  particle_group_def.position.Set(start_pos.x, -start_pos.y);
-  particle_group_def.color.Set(10, 50, 230, 100);
-  particle_group_ = particle_system_->CreateParticleGroup(particle_group_def);
-  std::cout << "particle_system_->CreateParticleGroup" << std::endl;
-}
-
-void World::Step(const float&      timeStep,
-                 const int&        velocityIterations,
-                 const int&        positionIterations,
-                 const int&        particleIterations,
-                 sf::RenderTarget& renderTarget,
+void World::Step(const float&      time_step,
+                 const int&        velocity_iterations,
+                 const int&        position_iterations,
+                 const int&        particle_iterations,
+                 sf::RenderTarget& render_target,
                  const bool&       disable_sfml_graphics)
 {
   // Calculate a time step in the Box2D world
-  b2World::Step(timeStep, velocityIterations, positionIterations, particleIterations);
+  b2World::Step(time_step, velocity_iterations,
+                position_iterations, particle_iterations);
   // Update all shapes in the visual SFML world accordingly
   b2Body* body = b2World::GetBodyList();
 
   while (body)
   {
-    void* user_data = body->GetUserData();
-    b2Body* nextBody = body->GetNext();
+    b2Body* next_body = body->GetNext();
     const b2Vec2& body_position = body->GetWorldCenter();
     if (PositionOutOfBounds(body_position))
     {
       DestroyBody(body);
+      body = next_body;
+      continue;
     }
-    else if (user_data)
+
+    b2Fixture* fixture = body->GetFixtureList();
+    while (fixture)
     {
-      Polygon* polygon = static_cast<Polygon*>(user_data);
-      polygon->ApplyPhysics(body->GetTransform());
-      if (!disable_sfml_graphics && !PositionOutOfView(body_position))
+      b2Fixture* next_fixture = fixture->GetNext();
+      void* user_data = fixture->GetUserData();
+      if (user_data)
       {
-        renderTarget.draw(*polygon);
+        Polygon* polygon = static_cast<Polygon*>(user_data);
+        polygon->ApplyPhysics(body->GetTransform());
+        if (!disable_sfml_graphics && !PositionOutOfView(body_position))
+        {
+          render_target.draw(*polygon);
+        }
       }
+      fixture = next_fixture;
     }
-    body = nextBody;
+    body = next_body;
   }
 
-  b2ParticleSystem* particle_system = GetParticleSystemList();
 
+  // Dispense some liquid from all dispensers
+  for (auto& dispenser : dispensers_)
+  {
+    dispenser.Step(time_step, nullptr, 0);
+  }
+  // Draw all particle systems
+  b2ParticleSystem* particle_system = GetParticleSystemList();
   while (particle_system)
   {
     b2ParticleSystem* next_particle_system = particle_system->GetNext();
-    DestroyOutOfBoundsParticles(particle_system);
-    if (!disable_sfml_graphics)
+    for (auto& drawable_liquid : drawable_liquids_)
     {
-      DrawParticleSystem(renderTarget, particle_system);
+      if (particle_system->GetRadius() == drawable_liquid.get_particle_radius())
+      {
+        drawable_liquid.Step(render_target, *particle_system);
+        break;
+      }
     }
+    DestroyOutOfBoundsParticles(*particle_system);
     particle_system = next_particle_system;
   }
 }
@@ -137,7 +283,7 @@ bool World::PositionOutOfView(const b2Vec2& position) const
   return -position.y < north_edge_;
 }
 
-void World::SetDebugDraw(DebugDraw* debug_draw)
+void World::set_debug_draw(DebugDraw* debug_draw)
 {
   this->debug_draw_ = debug_draw;
   b2World::SetDebugDraw(debug_draw);
@@ -155,50 +301,16 @@ void World::DrawDebugData()
   b2World::DrawDebugData();
 }
 
-void World::DrawParticleSystem(sf::RenderTarget& target, b2ParticleSystem* particle_system)
+void World::DestroyOutOfBoundsParticles(b2ParticleSystem& particle_system)
 {
-  const b2Vec2* positions = particle_system->GetPositionBuffer();
-  const b2ParticleColor* colors = particle_system->GetColorBuffer();
-  const auto particle_count = particle_system->GetParticleCount();
-  const auto particle_radius = particle_system->GetRadius();
-
-  static constexpr auto k_segments = 10;
-  static constexpr float k_increment = 2.0f * b2_pi / (float)k_segments;
-  sf::Vector2f center_offset_points[k_segments + 2];
-  float theta = 0.0f;
-  for (auto i = 0; i < k_segments + 2; i++)
-  {
-    center_offset_points[i] = particle_radius*sf::Vector2f(cosf(theta), sinf(theta));
-    theta += k_increment;
-  }
-
-  sf::VertexArray sfml_vertices(sf::TrianglesFan, k_segments+2);
-  for (auto i = 0; i < particle_count; i++)
-  {
-    if (PositionOutOfView(positions[i]))
-      continue;
-    const sf::Color& sfml_color = ConvertColor(colors[i]);
-    sf::Vector2f sfml_center = ConvertVector(positions[i]);
-    for (auto i = 0; i < k_segments + 2; i++)
-    {
-      sfml_vertices[i].position = sfml_center + center_offset_points[i];
-      sfml_vertices[i].color = sfml_color;
-    }
-    target.draw(sfml_vertices);
-  }
-}
-
-
-void World::DestroyOutOfBoundsParticles(b2ParticleSystem* particle_system) const
-{
-  const b2Vec2* particle_positions = particle_system->GetPositionBuffer();
-  const auto particle_count = particle_system->GetParticleCount();
+  const b2Vec2* particle_positions = particle_system.GetPositionBuffer();
+  const auto particle_count = particle_system.GetParticleCount();
   for (auto i = 0; i < particle_count; i++)
   {
     if (PositionOutOfBounds(particle_positions[i]))
     {
-      auto active_flags = particle_system->GetParticleFlags(i);
-      particle_system->SetParticleFlags(i, active_flags | b2_zombieParticle);
+      auto active_flags = particle_system.GetParticleFlags(i);
+      particle_system.SetParticleFlags(i, active_flags | b2_zombieParticle);
     }
   }
 }

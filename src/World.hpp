@@ -1,9 +1,17 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
+#include <list>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include <Box2D/Testbed/Framework/ParticleEmitter.h>
 #include "DebugDraw.hpp"
+#include "DrawableParticleSystem.hpp"
 
+enum ItemTypes
+{
+  k_Cup = 0,
+  k_Counter
+};
 
 class World : public b2World
 {
@@ -16,27 +24,25 @@ class World : public b2World
           const int& west_edge);
     ~World();
 
-    void CreateShape(const sf::Vector2f corners[], const unsigned int& vertex_count, b2BodyType body_type);
-
-    void DestroyOutOfBoundsParticles(b2ParticleSystem*) const;
+    void DestroyOutOfBoundsParticles(b2ParticleSystem&);
 
     bool PositionOutOfBounds(const b2Vec2&) const;
     bool PositionOutOfView(const b2Vec2&) const;
 
-    using b2World::CreateParticleSystem;
-    void CreateParticleSystem(const b2Vec2&);
-
-    void DrawParticleSystem(sf::RenderTarget& target, b2ParticleSystem* particle_system);
+    void CreateDispenser(const b2ParticleGroupDef&, const b2Vec2&);
+    void CreateItem(const ItemTypes& item_type, const b2Vec2& position);
 
     using b2World::Step;
     void Step(const float&, const int&, const int&, const int&, sf::RenderTarget&, const bool&);
 
     using b2World::DrawDebugData;
     void DrawDebugData();
-    void SetDebugDraw(DebugDraw*);
+    void set_debug_draw(DebugDraw*);
 
   private:
     DebugDraw* debug_draw_;
+    std::list<RadialEmitter> dispensers_;
+    std::list<DrawableParticleSystem> drawable_liquids_;
     const int north_edge_;
     const int east_edge_;
     const int south_edge_;
