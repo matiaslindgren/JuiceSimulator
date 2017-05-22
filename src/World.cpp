@@ -1,11 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "World.hpp"
 #include "DebugDraw.hpp"
 #include "Polygon.hpp"
-
-#include "Adapter.hpp"
+#include "World.hpp"
 
 
 World::World(const float& gravity_x,
@@ -42,108 +40,20 @@ World::~World()
 
 void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position)
 {
+  b2BodyDef body_def;
   switch (item_type)
   {
     case k_Cup:
-      {
-        b2BodyDef body_def;
-        body_def.type = b2_dynamicBody;
-
-        b2Body* body = this->CreateBody(&body_def);
-
-        static constexpr auto cup_height = 7;
-        static constexpr auto edge_thickness = 0.5f;
-        static constexpr auto side_slope = 0.2f;
-
-        b2Vec2 left_side[] = {
-          b2Vec2(0, cup_height),
-          b2Vec2(edge_thickness, cup_height),
-          b2Vec2(edge_thickness + side_slope, 0),
-          b2Vec2(side_slope, 0)
-        };
-
-        b2Vec2 right_side[4];
-        for (auto i = 0; i < 4; i++)
-        {
-          right_side[i] = left_side[i] + b2Vec2(cup_height/2, 0);
-        }
-        right_side[0].x += 2*side_slope;
-        right_side[1].x += 2*side_slope;
-
-        b2Vec2 bottom[] = {
-          left_side[3],
-          right_side[2],
-          right_side[2] - b2Vec2(0, edge_thickness),
-          left_side[3] - b2Vec2(0, edge_thickness)
-        };
-
-        b2Vec2* fixture_vertices[] = {
-          left_side,
-          right_side,
-          bottom
-        };
-
-        for (auto i = 0; i < 3; i++)
-        {
-          for (auto j = 0; j < 4; j++)
-          {
-            fixture_vertices[i][j].x += position.x;
-            fixture_vertices[i][j].y += -(position.y + cup_height);
-          }
-        }
-
-        for (auto i = 0; i < 3; i++)
-        {
-          b2PolygonShape shape;
-          shape.Set(fixture_vertices[i], 4);
-
-          b2FixtureDef fixture_def;
-          fixture_def.shape = &shape;
-          fixture_def.density = 1.5f;
-          fixture_def.restitution = 0;
-          b2Fixture* fixture = body->CreateFixture(&fixture_def);
-          fixture->SetUserData(new Polygon(fixture_vertices[i], 4, sf::Color(50, 50, 250, 150)));
-        }
-        break;
-      }
+      body_def.type = b2_dynamicBody;
+      CreateCupFixture(this->CreateBody(&body_def), position);
+      break;
     case k_Counter:
-      {
-        b2BodyDef body_def;
-        body_def.type = b2_staticBody;
-
-        static constexpr auto width = 60;
-        static constexpr auto height = 1;
-
-        b2Body* body = this->CreateBody(&body_def);
-
-        b2Vec2 vertices[] = {
-          b2Vec2(0, 0),
-          b2Vec2(width, 0),
-          b2Vec2(width, height),
-          b2Vec2(0, height)
-        };
-
-        for (auto i = 0; i < 4; i++)
-        {
-          vertices[i] += position;
-          vertices[i].y *= -1;
-        }
-
-        {
-          b2PolygonShape shape;
-          shape.Set(vertices, 4);
-
-          b2FixtureDef fixture_def;
-          fixture_def.shape = &shape;
-          b2Fixture* fixture = body->CreateFixture(&fixture_def);
-          fixture->SetUserData(new Polygon(vertices, 4, sf::Color(150, 150, 150, 50)));
-        }
-        break;
-      }
+      body_def.type = b2_staticBody;
+      CreateCounterFixture(this->CreateBody(&body_def), position);
+      break;
     default:
       break;
   }
-
 }
 
 void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b2Vec2& position)
@@ -162,15 +72,17 @@ void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b
   dispensers_.emplace_back();
   RadialEmitter& dispenser = dispensers_.back();
 
-  particle_system->CreateParticleGroup(liquid_definition);
+  b2ParticleGroup* group = particle_system->CreateParticleGroup(liquid_definition);
 
   auto particle_radius = particle_system->GetRadius();
   dispenser.SetParticleSystem(particle_system);
+  dispenser.SetGroup(group);
   dispenser.SetColor(liquid_definition.color);
   dispenser.SetParticleFlags(liquid_definition.flags);
   dispenser.SetPosition(b2Vec2(position.x, -position.y));
   dispenser.SetSize(b2Vec2(2.1*particle_radius, 5));
   dispenser.SetSpeed(0);
+  dispenser.SetVelocity(b2Vec2(0, -120));
   dispenser.SetEmitRate(80);
 
   b2BodyDef body_def;
@@ -200,7 +112,7 @@ void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
-  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 50)));
+  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 255)));
 
 }
 
@@ -214,7 +126,33 @@ void World::Step(const float&      time_step,
   // Calculate a time step in the Box2D world
   b2World::Step(time_step, velocity_iterations,
                 position_iterations, particle_iterations);
-  // Update all shapes in the visual SFML world accordingly
+
+  // Dispense some liquid from all dispensers
+  for (auto& dispenser : dispensers_)
+  {
+    dispenser.Step(time_step, nullptr, 0);
+  }
+
+  // Draw all particle systems, while removing all particles which are
+  // outside the screen
+  b2ParticleSystem* particle_system = GetParticleSystemList();
+  while (particle_system)
+  {
+    b2ParticleSystem* next_particle_system = particle_system->GetNext();
+    for (auto& drawable_liquid : drawable_liquids_)
+    {
+      if (particle_system->GetRadius() == drawable_liquid.get_particle_radius())
+      {
+        drawable_liquid.Step(render_target, *particle_system);
+        break;
+      }
+    }
+    DestroyOutOfBoundsParticles(*particle_system);
+    particle_system = next_particle_system;
+  }
+
+  // Draw all other shapes, while removing all shapes which are
+  // outside the screen
   b2Body* body = b2World::GetBodyList();
 
   while (body)
@@ -237,7 +175,7 @@ void World::Step(const float&      time_step,
       {
         Polygon* polygon = static_cast<Polygon*>(user_data);
         polygon->ApplyPhysics(body->GetTransform());
-        if (!disable_sfml_graphics && !PositionOutOfView(body_position))
+        if (!disable_sfml_graphics)
         {
           render_target.draw(*polygon);
         }
@@ -246,29 +184,6 @@ void World::Step(const float&      time_step,
     }
     body = next_body;
   }
-
-
-  // Dispense some liquid from all dispensers
-  for (auto& dispenser : dispensers_)
-  {
-    dispenser.Step(time_step, nullptr, 0);
-  }
-  // Draw all particle systems
-  b2ParticleSystem* particle_system = GetParticleSystemList();
-  while (particle_system)
-  {
-    b2ParticleSystem* next_particle_system = particle_system->GetNext();
-    for (auto& drawable_liquid : drawable_liquids_)
-    {
-      if (particle_system->GetRadius() == drawable_liquid.get_particle_radius())
-      {
-        drawable_liquid.Step(render_target, *particle_system);
-        break;
-      }
-    }
-    DestroyOutOfBoundsParticles(*particle_system);
-    particle_system = next_particle_system;
-  }
 }
 
 bool World::PositionOutOfBounds(const b2Vec2& position) const
@@ -276,11 +191,6 @@ bool World::PositionOutOfBounds(const b2Vec2& position) const
   return -position.y > south_edge_ ||
          position.x < west_edge_ ||
          position.x > east_edge_;
-}
-
-bool World::PositionOutOfView(const b2Vec2& position) const
-{
-  return -position.y < north_edge_;
 }
 
 void World::set_debug_draw(DebugDraw* debug_draw)

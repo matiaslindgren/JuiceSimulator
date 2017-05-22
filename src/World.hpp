@@ -6,12 +6,8 @@
 #include <Box2D/Testbed/Framework/ParticleEmitter.h>
 #include "DebugDraw.hpp"
 #include "DrawableParticleSystem.hpp"
+#include "Items.hpp"
 
-enum ItemTypes
-{
-  k_Cup = 0,
-  k_Counter
-};
 
 class World : public b2World
 {
@@ -27,7 +23,6 @@ class World : public b2World
     void DestroyOutOfBoundsParticles(b2ParticleSystem&);
 
     bool PositionOutOfBounds(const b2Vec2&) const;
-    bool PositionOutOfView(const b2Vec2&) const;
 
     void CreateDispenser(const b2ParticleGroupDef&, const b2Vec2&);
     void CreateItem(const ItemTypes& item_type, const b2Vec2& position);

@@ -11,6 +11,7 @@ set(SOURCES
   DebugDraw.cpp
   DebugLines.cpp
   DrawableParticleSystem.cpp
+  Items.cpp
   Main.cpp
   Polygon.cpp
   TextBox.cpp
