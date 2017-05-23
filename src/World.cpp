@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "DebugDraw.hpp"
-#include "Polygon.hpp"
 #include "World.hpp"
 
 
@@ -32,7 +31,7 @@ World::~World()
     while (fixture)
     {
       b2Fixture* next_fixture = fixture->GetNext();
-      delete static_cast<Polygon*>(fixture->GetUserData());
+      delete static_cast<sf::Drawable*>(fixture->GetUserData());
       fixture->SetUserData(nullptr);
       fixture = next_fixture;
     }
@@ -174,8 +173,7 @@ void World::Step(const float&      time_step,
       void* user_data = fixture->GetUserData();
       if (user_data)
       {
-        Polygon* polygon = static_cast<Polygon*>(user_data);
-        polygon->ApplyPhysics(body->GetTransform());
+        sf::Drawable* polygon = static_cast<sf::Drawable*>(user_data);
         if (!disable_sfml_graphics)
         {
           render_target.draw(*polygon);
