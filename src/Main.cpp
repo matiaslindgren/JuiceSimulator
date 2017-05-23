@@ -59,6 +59,9 @@ int main(int argc, char** argv) {
   static constexpr auto kViewHeight = kWindowHeight/10.0f;
   static constexpr auto kFps = 60;
   static constexpr auto kAntialiasinglevel = 4;
+  static constexpr auto kParticleGravityScale = 1.0f;
+  static constexpr auto kParticleDensity = 1.0f;
+  static constexpr auto kParticleRadius = 0.3f;
 
   sf::RenderWindow window;
   if (!disable_rendering)
@@ -82,8 +85,8 @@ int main(int argc, char** argv) {
     flags += b2Draw::e_shapeBit;
     flags += b2Draw::e_particleBit;
 
-    /* flags += b2Draw::e_jointBit; */
-    /* flags += b2Draw::e_aabbBit; */
+    flags += b2Draw::e_jointBit;
+    flags += b2Draw::e_aabbBit;
     /* flags += b2Draw::e_pairBit; */
     /* flags += b2Draw::e_centerOfMassBit; */
 
@@ -91,16 +94,19 @@ int main(int argc, char** argv) {
     world.set_debug_draw(&debug_draw);
   }
 
-
+  world.CreateParticleSystem(kParticleGravityScale,
+                             kParticleDensity,
+                             kParticleRadius);
   for (auto i = 0; i < 3; i++)
   {
     world.CreateDispenser(Juice(b2ParticleColor(250 - 50*i, 50*i, 250*i%2, 50)), b2Vec2(-25 + 30*i, -5));
-    world.CreateItem(ItemTypes(k_Cup), b2Vec2(-27 + 30*i, 0));
+    world.CreateItem(ItemTypes(k_Cup), b2Vec2(-5 + i*15, 0), b2Vec2(3, 7));
   }
 
-  world.CreateItem(ItemTypes(k_Counter), b2Vec2(-30, 12));
-  world.CreateItem(ItemTypes(k_Counter), b2Vec2(0, 12));
-  world.CreateItem(ItemTypes(k_Counter), b2Vec2(30, 12));
+  world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, -15), b2Vec2(10, 3));
+  world.CreateItem(ItemTypes(k_Box), b2Vec2(-25, -20), b2Vec2(6, 3));
+
+  world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, 15), b2Vec2(60, 3));
 
   constexpr auto k_TimeStep = 1.0f / 30.0f;
   constexpr auto k_VelocityIterations = 6;
