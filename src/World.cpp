@@ -41,36 +41,57 @@ World::~World()
   ground_body_ = nullptr;
 }
 
-void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position)
+void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size)
 {
   b2BodyDef body_def;
   switch (item_type)
   {
     case k_Cup:
       body_def.type = b2_dynamicBody;
-      CreateCupFixture(this->CreateBody(&body_def), position);
+      CreateCup(this->CreateBody(&body_def), position, size);
       break;
-    case k_Counter:
+    case k_Surface:
       body_def.type = b2_staticBody;
-      CreateCounterFixture(this->CreateBody(&body_def), position);
+      CreateBox(this->CreateBody(&body_def), position, size);
+      break;
+    case k_Box:
+      body_def.type = b2_dynamicBody;
+      CreateBox(this->CreateBody(&body_def), position, size);
       break;
     default:
       break;
   }
 }
 
-void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b2Vec2& position)
+b2ParticleSystem* World::CreateParticleSystem(const float& gravity_scale,
+                                              const float& density,
+                                              const float& particle_radius)
+{
+  const b2ParticleSystemDef particle_system_def;
+  b2ParticleSystem* particle_system = b2World::CreateParticleSystem(&particle_system_def);
+  particle_system->SetGravityScale(gravity_scale);
+  particle_system->SetDensity(density);
+  particle_system->SetRadius(particle_radius);
+  drawable_liquids_.emplace_back(particle_system->GetRadius());
+}
+
+void World::CreateSponge(const b2Vec2& position, const b2Vec2& size)
 {
   b2ParticleSystem* particle_system = GetParticleSystemList();
-  if (!particle_system)
-  {
-    const b2ParticleSystemDef particle_system_def;
-    particle_system = b2World::CreateParticleSystem(&particle_system_def);
-    particle_system->SetGravityScale(2.0f);
-    particle_system->SetDensity(1.0f);
-    particle_system->SetRadius(0.30f);
-    drawable_liquids_.emplace_back(particle_system->GetRadius());
-  }
+  assert(particle_system);
+
+  b2PolygonShape shape;
+  shape.SetAsBox(size.x, size.y);
+  Sponge sponge;
+  sponge.position.Set(position.x, -position.y);
+  sponge.shape = &shape;
+  particle_system->CreateParticleGroup(sponge);
+}
+
+void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position)
+{
+  b2ParticleSystem* particle_system = GetParticleSystemList();
+  assert(particle_system);
 
   dispensers_.emplace_back();
   RadialEmitter& dispenser = dispensers_.back();
@@ -93,30 +114,7 @@ void World::CreateDispenser(const b2ParticleGroupDef& liquid_definition, const b
 
   b2Body* body = this->CreateBody(&body_def);
 
-  auto height = 35*particle_radius;
-  auto width = 8*particle_radius;
-
-  b2Vec2 nozzle_vertices[] = {
-    b2Vec2(0, 0),
-    b2Vec2(0, height),
-    b2Vec2(width, height),
-    b2Vec2(width, 0),
-  };
-
-  for (auto i = 0; i < 4; i++)
-  {
-    nozzle_vertices[i].x += position.x - width/2;
-    nozzle_vertices[i].y += -(position.y + height/3);
-  }
-
-  b2ChainShape shape;
-  shape.CreateChain(nozzle_vertices, 4);
-
-  b2FixtureDef fixture_def;
-  fixture_def.shape = &shape;
-  b2Fixture* fixture = body->CreateFixture(&fixture_def);
-  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 255)));
-
+  CreateDispenserItem(body, position, particle_radius);
 }
 
 void World::Step(const float&      time_step,
@@ -202,9 +200,9 @@ void World::set_debug_draw(DebugDraw* debug_draw)
   b2World::SetDebugDraw(debug_draw);
   DebugLines& debuglines = this->debug_draw_->get_debuglines();
   debuglines.GenerateGrid(north_edge_, west_edge_,
-                           south_edge_, east_edge_, 1.0f);
+                          south_edge_, east_edge_, 1.0f);
   debuglines.GenerateCoordinateAxes(west_edge_, east_edge_,
-                                      north_edge_, south_edge_);
+                                    north_edge_, south_edge_);
 }
 
 void World::DrawDebugData()
