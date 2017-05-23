@@ -26,7 +26,30 @@ struct b2ParticleGroupDef
 }
 */
 
-struct Water : public b2ParticleGroupDef
+struct ParticleGroupDef : b2ParticleGroupDef
+{
+  ParticleGroupDef()
+  {
+    gravity_scale = 2.0f;
+    density = 0.8f;
+    particle_radius = 0.3f;
+  }
+  float gravity_scale;
+  float particle_radius;
+  float density;
+};
+
+struct Sponge : ParticleGroupDef
+{
+  Sponge()
+  {
+		flags = b2_springParticle | b2_colorMixingParticle;
+    groupFlags = b2_solidParticleGroup;
+    color = b2ParticleColor(240, 200, 40, 150);
+  }
+};
+
+struct Water : ParticleGroupDef
 {
 	Water()
 	{
@@ -35,7 +58,7 @@ struct Water : public b2ParticleGroupDef
 	}
 };
 
-struct Juice : public Water
+struct Juice : Water
 {
 	Juice(const b2ParticleColor& init_color)
   {
