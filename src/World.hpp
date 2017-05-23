@@ -37,9 +37,9 @@ class World : public b2World
     void set_debug_draw(DebugDraw*);
 
     using b2World::CreateParticleSystem;
-    b2ParticleSystem* CreateParticleSystem(const float& gravity_scale,
-                                           const float& density,
-                                           const float& particle_radius);
+    void CreateParticleSystem(const float& gravity_scale,
+                              const float& density,
+                              const float& particle_radius);
 
     b2Body* ground_body_;
 

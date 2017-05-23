@@ -62,9 +62,9 @@ void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position, const
   }
 }
 
-b2ParticleSystem* World::CreateParticleSystem(const float& gravity_scale,
-                                              const float& density,
-                                              const float& particle_radius)
+void World::CreateParticleSystem(const float& gravity_scale,
+                                 const float& density,
+                                 const float& particle_radius)
 {
   const b2ParticleSystemDef particle_system_def;
   b2ParticleSystem* particle_system = b2World::CreateParticleSystem(&particle_system_def);
