@@ -1,6 +1,7 @@
 #ifndef WORLDCALLBACKS_HPP
 #define WORLDCALLBACKS_HPP
 #include <Box2D/Box2D.h>
+#include "Adapter.hpp"
 
 #include <iostream>
 // Destruction listener for deleting the Polygon object assigned
@@ -29,4 +30,16 @@ class DestructionListener : public b2DestructionListener
     }
 };
 
+class QueryCallback : public b2QueryCallback
+{
+  public:
+    QueryCallback(const b2Vec2& point)
+      : point_(point),
+        matching_fixture_(nullptr)
+    {
+    }
+    virtual bool ReportFixture(b2Fixture* fixture);
+    b2Fixture* matching_fixture_;
+    const b2Vec2& point_;
+};
 #endif // WORLDCALLBACKS.HPP

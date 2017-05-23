@@ -11,3 +11,18 @@ void DestructionListener::SayGoodbye(b2Fixture* fixture)
   }
 }
 
+
+
+bool QueryCallback::ReportFixture(b2Fixture* fixture)
+{
+  if (fixture->GetBody()->GetType() != b2_dynamicBody)
+  {
+    return true;
+  }
+  if (fixture->TestPoint(point_))
+  {
+    matching_fixture_ = fixture;
+  }
+  return false;
+}
+
