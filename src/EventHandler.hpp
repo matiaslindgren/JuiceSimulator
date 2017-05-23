@@ -17,6 +17,8 @@ class EventHandler
     void HandleDebugDraw(sf::RenderWindow& event_window,
                          const sf::Event& event,
                          DebugDraw* debug_draw);
+    void HandleLeftButtonPress(const b2Vec2& mouse_position,
+                               World& world);
   private:
     b2MouseJoint* mouse_joint_;
 };
