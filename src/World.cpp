@@ -18,6 +18,8 @@ World::World(const float& gravity_x,
     south_edge_(south_edge),
     west_edge_(west_edge)
 {
+  b2BodyDef body_def;
+  ground_body_ = this->CreateBody(&body_def);
 }
 
 World::~World()
@@ -36,6 +38,7 @@ World::~World()
     }
     body = next_body;
   }
+  ground_body_ = nullptr;
 }
 
 void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position)

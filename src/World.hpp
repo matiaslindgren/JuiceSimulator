@@ -7,6 +7,7 @@
 #include "DebugDraw.hpp"
 #include "DrawableParticleSystem.hpp"
 #include "Items.hpp"
+#include "LiquidDefinitions.hpp"
 
 
 class World : public b2World
@@ -24,8 +25,9 @@ class World : public b2World
 
     bool PositionOutOfBounds(const b2Vec2&) const;
 
-    void CreateDispenser(const b2ParticleGroupDef&, const b2Vec2&);
-    void CreateItem(const ItemTypes& item_type, const b2Vec2& position);
+    void CreateDispenser(const ParticleGroupDef&, const b2Vec2&);
+    void CreateSponge(const b2Vec2& position, const b2Vec2& size);
+    void CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size);
 
     using b2World::Step;
     void Step(const float&, const int&, const int&, const int&, sf::RenderTarget&, const bool&);
@@ -33,6 +35,13 @@ class World : public b2World
     using b2World::DrawDebugData;
     void DrawDebugData();
     void set_debug_draw(DebugDraw*);
+
+    using b2World::CreateParticleSystem;
+    b2ParticleSystem* CreateParticleSystem(const float& gravity_scale,
+                                           const float& density,
+                                           const float& particle_radius);
+
+    b2Body* ground_body_;
 
   private:
     DebugDraw* debug_draw_;
