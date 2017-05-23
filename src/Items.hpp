@@ -1,6 +1,9 @@
 #ifndef ITEMS_HPP
 #define ITEMS_HPP
+#include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "Polygon.hpp"
+#include "DrawableDispenser.hpp"
 
 enum ItemTypes
 {
@@ -16,6 +19,6 @@ enum ItemTypes
 void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size);
 void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size);
 void CreateSponge(b2Body* body, const b2Vec2& position, const b2Vec2& size);
-void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius);
+void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius, sf::Texture* texture);
 
 #endif // ITEMS_HPP

@@ -95,14 +95,19 @@ int main(int argc, char** argv) {
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
     flags += b2Draw::e_particleBit;
-
     flags += b2Draw::e_jointBit;
     flags += b2Draw::e_aabbBit;
     /* flags += b2Draw::e_pairBit; */
     /* flags += b2Draw::e_centerOfMassBit; */
-
     debug_draw.SetFlags(flags);
     world.set_debug_draw(&debug_draw);
+  }
+
+  sf::Texture dispenser_texture;
+  if (!dispenser_texture.loadFromFile("media/img/dispenser.jpg"))
+  {
+    std::cerr << "Loading dispenser texture failed" << std::endl;
+    return EXIT_FAILURE;
   }
 
   world.CreateParticleSystem(kParticleGravityScale,
@@ -115,7 +120,7 @@ int main(int argc, char** argv) {
   };
   for (auto i = 0; i < 3; i++)
   {
-    world.CreateDispenser(Juice(colors[i]), b2Vec2(-20 + 20*i, -5));
+    world.CreateDispenser(Juice(colors[i]), b2Vec2(-20 + 20*i, -5), &dispenser_texture);
     world.CreateItem(ItemTypes(k_Cup), b2Vec2(-5 + i*15, 0), b2Vec2(3, 7));
   }
 

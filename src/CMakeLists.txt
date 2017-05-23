@@ -12,6 +12,7 @@ set(SOURCES
   DebugLines.cpp
   EventHandler.cpp
   DrawableParticleSystem.cpp
+  DrawableDispenser.cpp
   Items.cpp
   Main.cpp
   Polygon.cpp

@@ -1,6 +1,4 @@
 #include "Items.hpp"
-#include "Polygon.hpp"
-
 
 void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size)
 {
@@ -97,7 +95,7 @@ void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size)
   }
 }
 
-void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius)
+void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius, sf::Texture* texture)
 {
   const float& height = 35*particle_radius;
   const float& width = 8*particle_radius;
@@ -121,6 +119,20 @@ void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& part
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
-  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 255)));
+  fixture->SetUserData(new DrawableDispenser(nozzle_vertices, 4, texture));
+
+/* static constexpr unsigned int k_TriangleFanSegments = 24; */
+/* static constexpr float k_Increment = 2.0f * b2_pi / k_TriangleFanSegments;; */
+/*   sf::VertexArray  button_vertices_(sf::TrianglesFan, k_TriangleFanSegments + 2), */
+/*   float theta = 0.0f; */
+/*   sf::Vector2f sfml_center = sf::Vector2f(button_center.x, button_center.y); */
+/*   sf::Color sfml_color = sf::Color::Red; */
+/*   for (auto i = 0; i < button_vertices_.getVertexCount(); i++) */
+/*   { */
+/*     button_vertices_[i].position = sfml_center + button_radius*sf::Vector2f(cosf(theta), sinf(theta)); */
+/*     button_vertices_[i].color = sfml_color; */
+/*     theta += k_Increment; */
+/*   } */
+
 }
 

@@ -25,7 +25,7 @@ class World : public b2World
 
     bool PositionOutOfBounds(const b2Vec2&) const;
 
-    void CreateDispenser(const ParticleGroupDef&, const b2Vec2&);
+    void CreateDispenser(const ParticleGroupDef&, const b2Vec2&, sf::Texture*);
     void CreateSponge(const b2Vec2& position, const b2Vec2& size);
     void CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size);
 

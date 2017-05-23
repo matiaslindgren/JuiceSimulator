@@ -87,7 +87,7 @@ void World::CreateSponge(const b2Vec2& position, const b2Vec2& size)
   particle_system->CreateParticleGroup(sponge);
 }
 
-void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position)
+void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position, sf::Texture* texture)
 {
   b2ParticleSystem* particle_system = GetParticleSystemList();
   assert(particle_system);
@@ -106,14 +106,14 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   dispenser.SetSize(b2Vec2(2.1*particle_radius, 5));
   dispenser.SetSpeed(0);
   dispenser.SetVelocity(b2Vec2(0, -120));
-  dispenser.SetEmitRate(80);
+  dispenser.SetEmitRate(0);
 
   b2BodyDef body_def;
   body_def.type = b2_staticBody;
 
   b2Body* body = this->CreateBody(&body_def);
 
-  CreateDispenserItem(body, position, particle_radius);
+  CreateDispenserItem(body, position, particle_radius, texture);
 }
 
 void World::Step(const float&      time_step,
