@@ -3,55 +3,13 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <tclap/CmdLine.h>
+#include "Adapter.hpp"
 #include "DebugDraw.hpp"
+#include "EventHandler.hpp"
 #include "World.hpp"
 #include "WorldCallbacks.hpp"
 #include "LiquidDefinitions.hpp"
 
-
-void HandleEvents(sf::RenderWindow& window, DebugDraw& debug_draw)
-{
-  sf::Event event;
-  while (window.pollEvent(event))
-  {
-    if (event.type == sf::Event::Closed)
-    {
-      window.close();
-    } else if (event.type == sf::Event::MouseWheelScrolled &&
-        event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-    {
-      sf::View view = window.getView();
-      view.zoom(1.0f - event.mouseWheelScroll.delta/10.0f);
-      window.setView(view);
-    } else if (event.type == sf::Event::KeyPressed)
-    {
-      sf::View view = window.getView();
-      const float& offset = view.getSize().x/10.0f;
-      switch(event.key.code)
-      {
-        case sf::Keyboard::Up:
-          view.move(0.0f, -offset);
-          break;
-        case sf::Keyboard::Left:
-          view.move(-offset, 0.0f);
-          break;
-        case sf::Keyboard::Down:
-          view.move(0.0f, offset);
-          break;
-        case sf::Keyboard::Right:
-          view.move(offset, 0.0f);
-          break;
-        default:
-          break;
-      }
-      window.setView(view);
-    } else if (event.type == sf::Event::MouseMoved)
-    {
-      const sf::Vector2f mouse_position = window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
-      debug_draw.set_mouse_coordinates(mouse_position.x, mouse_position.y);
-    }
-  }
-}
 
 int main(int argc, char** argv) {
   bool disable_rendering;
@@ -93,8 +51,7 @@ int main(int argc, char** argv) {
   DestructionListener destruction_listener;
   world.SetDestructionListener(&destruction_listener);
 
-  /* ContactListener contact_listener; */
-  /* world.SetContactListener(&contact_listener); */
+  EventHandler event_handler;
 
   static constexpr auto kWindowWidth = 900;
   static constexpr auto kWindowHeight = 600;
@@ -153,7 +110,10 @@ int main(int argc, char** argv) {
   unsigned int drawnFrames = 0;
   while (window.isOpen())
   {
-    HandleEvents(window, debug_draw);
+    event_handler.HandleEvents(
+        window,
+        (enable_physics_debug) ? &debug_draw : nullptr,
+        world);
 
     window.clear(sf::Color::White);
 
