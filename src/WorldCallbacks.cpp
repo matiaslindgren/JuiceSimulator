@@ -23,7 +23,10 @@ void DestructionListener::SayGoodbye(b2Fixture* fixture)
 
 bool QueryCallback::ReportFixture(b2Fixture* fixture)
 {
-  void* actor_flag = fixture->GetBody()->GetUserData();
+  b2Body* body = fixture->GetBody();
+  if (!body)
+    return true;
+  void* actor_flag = body->GetUserData();
   if (actor_flag &&
       IsWaldoType(static_cast<int*>(actor_flag)) &&
       fixture->TestPoint(point_))
@@ -34,8 +37,8 @@ bool QueryCallback::ReportFixture(b2Fixture* fixture)
   return true;
 }
 
-bool QueryCallback::IsWaldoType(const int* flags) const
+bool QueryCallback::IsWaldoType(const int* flag) const
 {
-  return (*flags & match_flags_) == match_flags_;
+  return (match_flags_ & *flag) == *flag;
 }
 

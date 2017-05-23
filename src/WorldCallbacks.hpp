@@ -43,7 +43,7 @@ class QueryCallback : public b2QueryCallback
     b2Fixture* waldo_;
     const b2Vec2& point_;
   private:
-    bool IsWaldoType(const int* flags) const;
+    bool IsWaldoType(const int* flag) const;
     const int match_flags_;
 };
 #endif // WORLDCALLBACKS.HPP
