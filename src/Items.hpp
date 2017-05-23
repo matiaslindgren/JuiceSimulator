@@ -5,10 +5,14 @@
 enum ItemTypes
 {
   k_Cup = 0,
-  k_Counter
+  k_Surface,
+  k_Box,
+  k_Sponge
 };
 
-void CreateCupFixture(b2Body* body, const b2Vec2& position);
-void CreateCounterFixture(b2Body* body, const b2Vec2& position);
+void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size);
+void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size);
+void CreateSponge(b2Body* body, const b2Vec2& position, const b2Vec2& size);
+void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius);
 
 #endif // ITEMS_HPP
