@@ -1,28 +1,41 @@
 #include "WorldCallbacks.hpp"
-#include "Polygon.hpp"
 
 void DestructionListener::SayGoodbye(b2Fixture* fixture)
 {
-  void* user_data = fixture->GetUserData();
-  if (user_data)
+  void* drawable = fixture->GetUserData();
+  if (drawable)
   {
-    delete static_cast<Polygon*>(user_data);
+    delete static_cast<sf::Drawable*>(drawable);
     fixture->SetUserData(nullptr);
+  }
+  b2Body* body = fixture->GetBody();
+  if (body)
+  {
+    void* actor_flag = body->GetUserData();
+    if (actor_flag)
+    {
+      delete static_cast<int*>(actor_flag);
+      body->SetUserData(nullptr);
+    }
   }
 }
 
 
-
 bool QueryCallback::ReportFixture(b2Fixture* fixture)
 {
-  if (fixture->GetBody()->GetType() != b2_dynamicBody)
+  void* actor_flag = fixture->GetBody()->GetUserData();
+  if (actor_flag &&
+      IsWaldoType(static_cast<int*>(actor_flag)) &&
+      fixture->TestPoint(point_))
   {
-    return true;
+    waldo_ = fixture;
+    return false;
   }
-  if (fixture->TestPoint(point_))
-  {
-    matching_fixture_ = fixture;
-  }
-  return false;
+  return true;
+}
+
+bool QueryCallback::IsWaldoType(const int* flags) const
+{
+  return (*flags & match_flags_) == match_flags_;
 }
 
