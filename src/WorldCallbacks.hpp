@@ -33,13 +33,17 @@ class DestructionListener : public b2DestructionListener
 class QueryCallback : public b2QueryCallback
 {
   public:
-    QueryCallback(const b2Vec2& point)
+    QueryCallback(const b2Vec2& point, const int& match_flags)
       : point_(point),
-        matching_fixture_(nullptr)
+        match_flags_(match_flags),
+        waldo_(nullptr)
     {
     }
     virtual bool ReportFixture(b2Fixture* fixture);
-    b2Fixture* matching_fixture_;
+    b2Fixture* waldo_;
     const b2Vec2& point_;
+  private:
+    bool IsWaldoType(const int* flags) const;
+    const int match_flags_;
 };
 #endif // WORLDCALLBACKS.HPP

@@ -4,10 +4,13 @@
 
 enum ItemTypes
 {
-  k_Cup = 0,
-  k_Surface,
-  k_Box,
-  k_Sponge
+  k_Cup = 1,
+  k_Surface = 1 << 1,
+  k_Box = 1 << 2,
+  k_Sponge = 1 << 3,
+  k_Button = 1 << 4,
+
+  k_Movable = k_Cup | k_Box | k_Sponge
 };
 
 void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size);
