@@ -86,7 +86,41 @@ void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size)
 
     b2FixtureDef fixture_def;
     fixture_def.shape = &shape;
+    if (body->GetType() == b2_dynamicBody)
+    {
+      // Boxes should appear heavy with great inertia
+      fixture_def.density = 2.0f;
+      fixture_def.restitution = 0.15f;
+    }
     b2Fixture* fixture = body->CreateFixture(&fixture_def);
     fixture->SetUserData(new Polygon(vertices, 4, sf::Color(150, 150, 150, 50)));
   }
 }
+
+void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius)
+{
+  const float& height = 35*particle_radius;
+  const float& width = 8*particle_radius;
+
+  b2Vec2 nozzle_vertices[] = {
+    b2Vec2(0, 0),
+    b2Vec2(0, height),
+    b2Vec2(width, height),
+    b2Vec2(width, 0),
+  };
+
+  for (auto i = 0; i < 4; i++)
+  {
+    nozzle_vertices[i].x += position.x - width/2;
+    nozzle_vertices[i].y += -(position.y + height/3);
+  }
+
+  b2ChainShape shape;
+  shape.CreateChain(nozzle_vertices, 4);
+
+  b2FixtureDef fixture_def;
+  fixture_def.shape = &shape;
+  b2Fixture* fixture = body->CreateFixture(&fixture_def);
+  fixture->SetUserData(new Polygon(nozzle_vertices, 4, sf::Color(0, 0, 0, 255)));
+}
+
