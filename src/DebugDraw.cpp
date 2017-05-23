@@ -147,12 +147,6 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 }
 
 
-void DebugDraw::set_mouse_coordinates(const float& x, const float& y)
-{
-  mouse_coordinates_.x = x;
-  mouse_coordinates_.y = y;
-}
-
 void DebugDraw::DrawMouseCoordinates()
 {
   const sf::View& view = window_.getView();

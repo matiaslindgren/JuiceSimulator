@@ -66,7 +66,10 @@ class DebugDraw : public b2Draw
 
     DebugLines& get_debuglines();
 
-    void set_mouse_coordinates(const float& x, const float& y);
+    void set_mouse_coordinates(const sf::Vector2f& position)
+    {
+      mouse_coordinates_ = position;
+    }
 
   private:
     sf::RenderWindow& window_;
