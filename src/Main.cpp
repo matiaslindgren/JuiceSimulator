@@ -46,37 +46,48 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  World world(0.0f, 9.81f, -50, 50, 50, -50);
-
-  DestructionListener destruction_listener;
-  world.SetDestructionListener(&destruction_listener);
-
-  EventHandler event_handler;
-
-  static constexpr auto kWindowWidth = 900;
-  static constexpr auto kWindowHeight = 600;
-  static constexpr auto kViewWidth = kWindowWidth/10.0f;
-  static constexpr auto kViewHeight = kWindowHeight/10.0f;
   static constexpr auto kFps = 60;
+  static constexpr auto k_ViewScale = 0.1f;
   static constexpr auto kAntialiasinglevel = 4;
   static constexpr auto kParticleGravityScale = 1.0f;
   static constexpr auto kParticleDensity = 1.0f;
   static constexpr auto kParticleRadius = 0.3f;
 
   sf::RenderWindow window;
-  if (!disable_rendering)
-  {
-    sf::ContextSettings settings;
-    settings.antialiasingLevel = kAntialiasinglevel;
-    window.create(sf::VideoMode(kWindowWidth, kWindowHeight),
-        "title todo", sf::Style::Default, settings);
-    window.setFramerateLimit(kFps);
+  sf::ContextSettings settings;
+  settings.antialiasingLevel = kAntialiasinglevel;
 
-    sf::View view = window.getDefaultView();
-    view.setCenter(5-0.5, 5-0.5);
-    view.setSize(kViewWidth, kViewHeight);
-    window.setView(view);
+  bool found_valid_video_mode = false;
+  for (auto& video_mode : sf::VideoMode::getFullscreenModes())
+  {
+    if (video_mode.isValid())
+    {
+      found_valid_video_mode = true;
+      window.create(video_mode, "splash splosh", sf::Style::Fullscreen, settings);
+      break;
+    }
   }
+  if (!found_valid_video_mode)
+  {
+    std::cerr << "Could not find valid video mode for full screen" << std::endl;
+    window.create(sf::VideoMode(), "splash splosh", sf::Style::Default, settings);
+  }
+
+  window.setFramerateLimit(kFps);
+
+  const sf::Vector2u& window_size = window.getSize();
+  const sf::Vector2f& view_size = sf::Vector2f(k_ViewScale*window_size.x, k_ViewScale*window_size.y);
+  sf::View view = window.getDefaultView();
+  view.setCenter(0, 0);
+  view.setSize(view_size);
+  window.setView(view);
+
+  World world(0.0f, 10.0f, -view_size.y/1.5f, view_size.x/1.5f, view_size.y/1.5f, -view_size.x/1.5f);
+
+  DestructionListener destruction_listener;
+  world.SetDestructionListener(&destruction_listener);
+
+  EventHandler event_handler;
 
   DebugDraw debug_draw(window);
   if (enable_physics_debug)
@@ -97,9 +108,14 @@ int main(int argc, char** argv) {
   world.CreateParticleSystem(kParticleGravityScale,
                              kParticleDensity,
                              kParticleRadius);
+  b2ParticleColor colors[] = {
+    b2ParticleColor(250, 20, 20, 50),
+    b2ParticleColor(20, 250, 20, 50),
+    b2ParticleColor(20, 20, 250, 50),
+  };
   for (auto i = 0; i < 3; i++)
   {
-    world.CreateDispenser(Juice(b2ParticleColor(250 - 50*i, 50*i, 250*i%2, 50)), b2Vec2(-25 + 30*i, -5));
+    world.CreateDispenser(Juice(colors[i]), b2Vec2(-20 + 20*i, -5));
     world.CreateItem(ItemTypes(k_Cup), b2Vec2(-5 + i*15, 0), b2Vec2(3, 7));
   }
 
@@ -114,7 +130,7 @@ int main(int argc, char** argv) {
   constexpr auto k_ParticleIterations = 3;
 
   unsigned int drawnFrames = 0;
-  while (window.isOpen())
+  while (!disable_rendering && window.isOpen())
   {
     event_handler.HandleEvents(
         window,
