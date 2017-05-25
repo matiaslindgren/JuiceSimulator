@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(SOURCES
   Adapter.cpp
+  Button.cpp
   DebugDraw.cpp
   DebugLines.cpp
   EventHandler.cpp
