@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
@@ -43,19 +44,26 @@ World::~World()
 void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size)
 {
   b2BodyDef body_def;
+  b2Body* body = nullptr;
   switch (item_type)
   {
     case k_Cup:
       body_def.type = b2_dynamicBody;
-      CreateCup(this->CreateBody(&body_def), position, size);
+      body = this->CreateBody(&body_def);
+      body->SetUserData(new ItemTypes(k_Cup));
+      CreateCup(body, position, size);
       break;
     case k_Surface:
       body_def.type = b2_staticBody;
-      CreateBox(this->CreateBody(&body_def), position, size);
+      body = this->CreateBody(&body_def);
+      body->SetUserData(new ItemTypes(k_Surface));
+      CreateBox(body, position, size);
       break;
     case k_Box:
       body_def.type = b2_dynamicBody;
-      CreateBox(this->CreateBody(&body_def), position, size);
+      body = this->CreateBody(&body_def);
+      body->SetUserData(new ItemTypes(k_Box));
+      CreateBox(body, position, size);
       break;
     default:
       break;
