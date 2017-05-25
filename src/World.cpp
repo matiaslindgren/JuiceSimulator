@@ -32,9 +32,19 @@ World::~World()
     while (fixture)
     {
       b2Fixture* next_fixture = fixture->GetNext();
-      delete static_cast<sf::Drawable*>(fixture->GetUserData());
-      fixture->SetUserData(nullptr);
+      void* user_data = fixture->GetUserData();
+      if (user_data)
+      {
+        delete static_cast<sf::Drawable*>(fixture->GetUserData());
+        fixture->SetUserData(nullptr);
+      }
       fixture = next_fixture;
+    }
+    void* user_data = body->GetUserData();
+    if (user_data)
+    {
+      delete static_cast<ItemTypes*>(body->GetUserData());
+      body->SetUserData(nullptr);
     }
     body = next_body;
   }
