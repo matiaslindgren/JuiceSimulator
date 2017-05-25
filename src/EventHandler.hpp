@@ -4,7 +4,6 @@
 #include <Box2D/Box2D.h>
 #include "DebugDraw.hpp"
 #include "World.hpp"
-#include "WorldCallbacks.hpp"
 
 
 class EventHandler
@@ -19,8 +18,9 @@ class EventHandler
                          DebugDraw* debug_draw);
     void HandleLeftButtonPress(const b2Vec2& mouse_position,
                                World& world);
-  private:
     b2MouseJoint* mouse_joint_;
+  private:
+    bool left_mouse_is_down_;
 };
 
 #endif // EVENTHANDLER_HPP

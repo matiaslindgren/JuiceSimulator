@@ -68,23 +68,19 @@ void EventHandler::HandleLeftButtonPress(const b2Vec2& mouse_position, World& wo
   if (fixture_in_aabb && !mouse_joint_)
   { // User wants to begin moving around something that is movable
     b2Body* body = fixture_in_aabb->GetBody();
+    assert(body);
     b2MouseJointDef mouse_joint_def;
     mouse_joint_def.bodyA = world.ground_body_;
     mouse_joint_def.bodyB = body;
     mouse_joint_def.target = mouse_position;
     mouse_joint_def.maxForce = 1000.0f * body->GetMass();
     mouse_joint_ = static_cast<b2MouseJoint*>(world.CreateJoint(&mouse_joint_def));
+    mouse_joint_->SetUserData(this);
     body->SetAwake(true);
   }
-  else if (fixture_in_aabb && mouse_joint_)
+  else if (mouse_joint_)
   { // User is moving around something that is movable
     mouse_joint_->SetTarget(mouse_position);
-  }
-  else if (!fixture_in_aabb && mouse_joint_)
-  { // Something has been moved around but the mouse is not on it
-    // i.e. the movable object has slipped out of the player's hands
-    world.DestroyJoint(mouse_joint_);
-    mouse_joint_ = nullptr;
   }
   else
   { // Check for buttons
@@ -93,8 +89,12 @@ void EventHandler::HandleLeftButtonPress(const b2Vec2& mouse_position, World& wo
     fixture_in_aabb = callback.waldo_;
     if (fixture_in_aabb)
     { // User pressed a button
-      b2Body* body = fixture_in_aabb->GetBody();
-      // TODO toggle button in world
+      void* fixture_user_data = fixture_in_aabb->GetUserData();
+      if (fixture_user_data)
+      {
+        Button* button = static_cast<Button*>(fixture_user_data);
+        button->toggle_();
+      }
     }
   }
 }
@@ -118,8 +118,14 @@ void EventHandler::HandleEvents(sf::RenderWindow& event_window,
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
-      const sf::Vector2f& mouse_position = event_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
+      const sf::Vector2f& mouse_position = event_window.mapPixelToCoords(sf::Mouse::getPosition(event_window));
+      /* std::cout << "pressed button at "  << mouse_position.x << ", " << mouse_position.y << std::endl; */
       HandleLeftButtonPress(ConvertVector(mouse_position), world);
+    }
+    else if (mouse_joint_)
+    { // The player let go of something that was being moved
+      world.DestroyJoint(mouse_joint_);
+      mouse_joint_ = nullptr;
     }
   }
 }
