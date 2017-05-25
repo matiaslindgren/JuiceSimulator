@@ -100,6 +100,7 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   b2ParticleSystem* particle_system = GetParticleSystemList();
   assert(particle_system);
 
+  auto dispenser_id = dispensers_.size();
   dispensers_.emplace_back();
   RadialEmitter& dispenser = dispensers_.back();
 
@@ -113,16 +114,28 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   dispenser.SetPosition(b2Vec2(position.x, -position.y));
   dispenser.SetSize(b2Vec2(2.1*particle_radius, 5));
   dispenser.SetSpeed(0);
-  dispenser.SetVelocity(b2Vec2(0, -120));
-  dispenser.SetEmitRate(0);
+  dispenser.SetVelocity(b2Vec2(0, -80));
+  dispenser.SetEmitRate(100);
+
+  auto& dispensers = this->dispensers_;
+  std::function<void()> ToggleDispenserCallback =
+    [&dispensers, dispenser_id]()
+    {
+      std::cout << "toggled " << dispenser_id << " " << &dispensers[dispenser_id] << std::endl;
+      dispensers[dispenser_id].SetEmitRate((dispensers[dispenser_id].GetEmitRate() < 1) ? 60 : 0);
+      std::cout << "has emit rate " << dispensers[dispenser_id].GetEmitRate() << std::endl;
+    };
 
   b2BodyDef body_def;
   body_def.type = b2_staticBody;
 
   b2Body* body = this->CreateBody(&body_def);
+  body->SetUserData(new ItemTypes(k_Button));
 
   CreateDispenserItem(body, position, particle_radius, texture);
+  CreateButton(body, position, 1, ToggleDispenserCallback);
 }
+
 
 void World::Step(const float&      time_step,
                  const int&        velocity_iterations,
