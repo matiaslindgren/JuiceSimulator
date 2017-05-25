@@ -129,18 +129,21 @@ int main(int argc, char** argv) {
 
   world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, 15), b2Vec2(60, 3));
 
-  constexpr auto k_TimeStep = 1.0f / 30.0f;
+  constexpr auto k_TimeStep = 1.0f / 60.0f;
   constexpr auto k_VelocityIterations = 6;
   constexpr auto k_PositionIterations = 3;
   constexpr auto k_ParticleIterations = 3;
 
+  sf::Clock clock;
+  int last_time = 0;
   unsigned int drawnFrames = 0;
+
   while (!disable_rendering && window.isOpen())
   {
-    event_handler.HandleEvents(
-        window,
-        (enable_physics_debug) ? &debug_draw : nullptr,
-        world);
+    if (enable_physics_debug)
+      event_handler.HandleEvents(window, &debug_draw, world);
+    else
+      event_handler.HandleEvents(window, nullptr, world);
 
     window.clear(sf::Color::White);
 
@@ -148,8 +151,11 @@ int main(int argc, char** argv) {
                k_PositionIterations, k_ParticleIterations,
                window, disable_sfml_graphics);
 
+    int current_time = clock.getElapsedTime().asMilliseconds();
+    int delta_time = current_time - last_time;
+    last_time = current_time;
     if (enable_physics_debug)
-      world.DrawDebugData();
+      world.DrawDebugData(1000/delta_time);
 
     window.display();
 
