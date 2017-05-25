@@ -1,6 +1,6 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#include <list>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <Box2D/Testbed/Framework/ParticleEmitter.h>
@@ -44,8 +44,9 @@ class World : public b2World
 
   private:
     DebugDraw* debug_draw_;
-    std::list<RadialEmitter> dispensers_;
-    std::list<DrawableParticleSystem> drawable_liquids_;
+    std::vector<RadialEmitter> dispensers_;
+    int enabled_dispensers_;
+    std::vector<DrawableParticleSystem> drawable_liquids_;
     const int north_edge_;
     const int east_edge_;
     const int south_edge_;
