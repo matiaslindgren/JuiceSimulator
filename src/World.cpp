@@ -187,17 +187,43 @@ void World::Step(const float&      time_step,
       continue;
     }
 
+    const b2Transform& body_transform = body->GetTransform();
+
     b2Fixture* fixture = body->GetFixtureList();
     while (fixture)
     {
       b2Fixture* next_fixture = fixture->GetNext();
-      void* user_data = fixture->GetUserData();
-      if (user_data)
+      /* void* user_data = fixture->GetUserData(); */
+      /* sf::Drawable* polygon = static_cast<sf::Drawable*>(user_data); */
+      if (!disable_sfml_graphics)
       {
-        sf::Drawable* polygon = static_cast<sf::Drawable*>(user_data);
-        if (!disable_sfml_graphics)
+        switch (fixture->GetType())
         {
-          render_target.draw(*polygon);
+          case b2Shape::e_polygon:
+            {
+              // From Box2D/Dynamics/b2World.cpp
+              b2PolygonShape* poly = static_cast<b2PolygonShape*>(fixture->GetShape());
+              auto vertexCount = poly->m_count;
+              sf::VertexArray vertices(sf::TrianglesFan, vertexCount);
+              for (auto i = 0; i < vertexCount; ++i)
+              {
+                const b2Vec2& new_position = b2Mul(body_transform, poly->m_vertices[i]);
+                vertices[i].position.x = new_position.x;
+                vertices[i].position.y = -new_position.y;
+                vertices[i].color = sf::Color::Blue;
+              }
+              render_target.draw(vertices);
+            }
+            break;
+          case b2Shape::e_chain:
+            {
+
+              sf::Drawable* dispenser = static_cast<sf::Drawable*>(fixture->GetUserData());
+              render_target.draw(*dispenser);
+            }
+            break;
+          default:
+            break;
         }
       }
       fixture = next_fixture;
