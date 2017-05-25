@@ -11,6 +11,10 @@ class Polygon : public sf::Drawable
             const sf::Color& color);
     /* void ApplyPhysics(const b2Transform& b2_transform); */
 
+    sf::VertexArray& get_vertices()
+    {
+      return vertices_;
+    }
   private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     sf::VertexArray vertices_;
