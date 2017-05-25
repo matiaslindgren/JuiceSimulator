@@ -4,6 +4,7 @@
 #include <Box2D/Box2D.h>
 #include "Polygon.hpp"
 #include "DrawableDispenser.hpp"
+#include "Button.hpp"
 
 enum ItemTypes
 {
@@ -20,5 +21,6 @@ void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size);
 void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size);
 void CreateSponge(b2Body* body, const b2Vec2& position, const b2Vec2& size);
 void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius, sf::Texture* texture);
+void CreateButton(b2Body* body, const b2Vec2& position, const float& radius, std::function<void()>& toggle);
 
 #endif // ITEMS_HPP

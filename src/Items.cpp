@@ -120,19 +120,22 @@ void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& part
   fixture_def.shape = &shape;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
   fixture->SetUserData(new DrawableDispenser(nozzle_vertices, 4, texture));
-
-/* static constexpr unsigned int k_TriangleFanSegments = 24; */
-/* static constexpr float k_Increment = 2.0f * b2_pi / k_TriangleFanSegments;; */
-/*   sf::VertexArray  button_vertices_(sf::TrianglesFan, k_TriangleFanSegments + 2), */
-/*   float theta = 0.0f; */
-/*   sf::Vector2f sfml_center = sf::Vector2f(button_center.x, button_center.y); */
-/*   sf::Color sfml_color = sf::Color::Red; */
-/*   for (auto i = 0; i < button_vertices_.getVertexCount(); i++) */
-/*   { */
-/*     button_vertices_[i].position = sfml_center + button_radius*sf::Vector2f(cosf(theta), sinf(theta)); */
-/*     button_vertices_[i].color = sfml_color; */
-/*     theta += k_Increment; */
-/*   } */
-
 }
+
+void CreateButton(b2Body* body,
+                  const b2Vec2& position,
+                  const float& radius,
+                  std::function<void()>& toggle)
+{
+  b2CircleShape shape;
+  shape.m_radius = radius;
+  shape.m_p.Set(position.x, -position.y);
+
+  b2FixtureDef fixture_def;
+  fixture_def.shape = &shape;
+  fixture_def.isSensor = true;
+  b2Fixture* fixture = body->CreateFixture(&fixture_def);
+  fixture->SetUserData(new Button(position, radius, toggle));
+}
+
 
