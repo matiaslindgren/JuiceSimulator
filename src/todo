@@ -1,0 +1,16 @@
+* b2Body->UserData(GameEntity):
+    GameEntity:
+    - wraps DrawableItem objects
+* b2Fixture->UserData(DrawableItem)
+    DrawableItem:
+    - has preallocated vertices, color, texture etc
+    - methods:
+        draw
+        applytransform
+        press
+        click
+        release
+* b2MouseJoint->UserData(MouseJoint)
+    MouseJoint:
+    - boolean enabled flag
+    -
