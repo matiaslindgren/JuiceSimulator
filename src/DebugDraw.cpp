@@ -19,6 +19,8 @@
 
 // This source file has been altered from the original Box2D source file
 
+#include <sstream>
+#include <iomanip>
 #include <SFML/Graphics.hpp>
 #include "math.h"
 #include "DebugDraw.hpp"
@@ -152,13 +154,15 @@ void DebugDraw::DrawMouseCoordinates()
   const sf::View& view = window_.getView();
   const sf::Vector2f& viewCenter = view.getCenter();
   const sf::Vector2f& viewSize = view.getSize();
-  sf::Vector2f textPosition(viewCenter.x - viewSize.x/2,
-                            viewCenter.y - viewSize.y/2);
+  sf::Vector2f textPosition(viewCenter.x - viewSize.x/2 + 1,
+                            viewCenter.y - viewSize.y/2 + 1);
   mouse_coordinate_box_.setPosition(textPosition);
 
   const sf::Vector2u& window_size = window_.getSize();
   const sf::Vector2f text_scale(viewSize.x/window_size.x, viewSize.y/window_size.y);
-  mouse_coordinate_box_.UpdateText(mouse_coordinates_, text_scale);
+  std::stringstream ss;
+  ss << mouse_coordinates_.x << ", " << std::setprecision(2) << mouse_coordinates_.y;
+  mouse_coordinate_box_.UpdateText(ss.str(), text_scale);
   window_.draw(mouse_coordinate_box_);
 }
 
@@ -192,37 +196,25 @@ void DebugDraw::DrawParticles(const b2Vec2 *centers, float32 radius, const b2Par
   }
 }
 
-
-// not implemented
-
-float ComputeFPS()
+void DebugDraw::DrawFPS(const unsigned int& fps)
 {
-  /* static bool debugPrintFrameTime = false; */
-  /* static int lastms = 0; */
-  /* int curms = glutGet(GLUT_ELAPSED_TIME); */
-  /* int delta = curms - lastms; */
-  /* lastms = curms; */
+  const sf::View& view = window_.getView();
+  const sf::Vector2f& viewCenter = view.getCenter();
+  const sf::Vector2f& viewSize = view.getSize();
+  sf::Vector2f textPosition(viewCenter.x - viewSize.x/2 + 1,
+                            viewCenter.y - viewSize.y/2 + 4);
+  fps_box_.setPosition(textPosition);
 
-  /* static float dsmooth = 16; */
-  /* dsmooth = (dsmooth * 30 + delta) / 31; */
-
-  /* if ( debugPrintFrameTime ) */
-  /* { */
-  /* #ifdef ANDROID */
-  /*  __android_log_print(ANDROID_LOG_VERBOSE, "Testbed", "msec = %f", dsmooth); */
-  /* #endif */
-  /* } */
-
-  /* return dsmooth; */
-  std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called ComputeFPS" << std::endl;
-  return -1.0f;
+  const sf::Vector2u& window_size = window_.getSize();
+  const sf::Vector2f text_scale(viewSize.x/window_size.x, viewSize.y/window_size.y);
+  fps_box_.UpdateText(std::to_string(fps), text_scale);
+  window_.draw(fps_box_);
 }
 
-void DebugDraw::DrawString(int x, int y, const char *string, ...)
+void DebugDraw::DrawString(int x, int y, const char* string, ...)
 {
   std::cout << "NOT IMPLEMENTED: ";
-  std::cout << "called DrawString with x y " << std::endl;
+  std::cout << "called DrawString with vector" << std::endl;
 }
 
 void DebugDraw::DrawString(const b2Vec2& p, const char *string, ...)

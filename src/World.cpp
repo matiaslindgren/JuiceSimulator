@@ -250,10 +250,11 @@ void World::set_debug_draw(DebugDraw* debug_draw)
                                     north_edge_, south_edge_);
 }
 
-void World::DrawDebugData()
+void World::DrawDebugData(const unsigned int& fps)
 {
   this->debug_draw_->DrawMouseCoordinates();
   this->debug_draw_->DrawDebugLines();
+  this->debug_draw_->DrawFPS(fps);
   b2World::DrawDebugData();
 }
 

@@ -64,6 +64,8 @@ class DebugDraw : public b2Draw
 
     void DrawDebugLines();
 
+    void DrawFPS(const unsigned int& fps);
+
     DebugLines& get_debuglines();
 
     void set_mouse_coordinates(const sf::Vector2f& position)
@@ -75,6 +77,7 @@ class DebugDraw : public b2Draw
     sf::RenderWindow& window_;
     sf::Vector2f mouse_coordinates_;
     TextBox mouse_coordinate_box_;
+    TextBox fps_box_;
     DebugLines debuglines_;
 
 };

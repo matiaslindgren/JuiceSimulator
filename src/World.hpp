@@ -32,8 +32,7 @@ class World : public b2World
     using b2World::Step;
     void Step(const float&, const int&, const int&, const int&, sf::RenderTarget&, const bool&);
 
-    using b2World::DrawDebugData;
-    void DrawDebugData();
+    void DrawDebugData(const unsigned int& fps);
     void set_debug_draw(DebugDraw*);
 
     using b2World::CreateParticleSystem;
