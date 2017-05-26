@@ -144,6 +144,8 @@ void CreateDispenserItem(b2Body* body,
   b2ChainShape shape;
   shape.CreateChain(nozzle_vertices, 4);
 
+  sf::RenderStates render_states;
+  render_states.blendMode = sf::BlendNone;
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
@@ -153,12 +155,27 @@ void CreateDispenserItem(b2Body* body,
 void CreateButton(b2Body* body,
                   const b2Vec2& position,
                   const float& radius,
-                  std::function<void()>& toggle)
+                  const sf::Color& color)
 {
   b2CircleShape shape;
   shape.m_radius = radius;
   shape.m_p.Set(position.x, -position.y);
 
+  static constexpr int k_Segments = 16;
+  static constexpr int k_VertexCount = k_Segments + 2;
+  static constexpr float k_Increment = 2.0f * b2_pi / k_Segments;
+
+  float theta = 0.0f;
+  b2Vec2 vertices[k_VertexCount];
+  for (auto i = 0; i < k_VertexCount; i++)
+  {
+    vertices[i].x = position.x + radius*cosf(theta);
+    vertices[i].y = -position.y + radius*sinf(theta);
+    theta += k_Increment;
+  }
+
+  sf::RenderStates render_states;
+  render_states.blendMode = sf::BlendNone;
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
   fixture_def.isSensor = true;
