@@ -25,8 +25,13 @@ class World : public b2World
 
     bool PositionOutOfBounds(const b2Vec2&) const;
 
-    void CreateDispenser(const ParticleGroupDef&, const b2Vec2&, sf::Texture*);
-    void CreateSponge(const b2Vec2& position, const b2Vec2& size);
+    void CreateDispenser(const ParticleGroupDef&, const b2Vec2&);
+    void CreateDispenserButton(const unsigned int& dispenser_index,
+                               const b2Vec2& position,
+                               const unsigned int& emit_rate,
+                               const sf::Color& color);
+
+    /* void CreateSponge(const b2Vec2& position, const b2Vec2& size); */
     void CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size);
 
     using b2World::Step;
