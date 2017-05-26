@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cmath>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
@@ -118,14 +119,32 @@ int main(int argc, char** argv) {
     b2ParticleColor(20, 250, 20, 50),
     b2ParticleColor(20, 20, 250, 50),
   };
-  for (auto i = 0; i < 3; i++)
+
+  // Create 3 juice dispensers
+  for (int i = 0; i < 3; i++)
   {
-    world.CreateDispenser(Juice(colors[i]), b2Vec2(-20 + 20*i, -5), &dispenser_texture);
-    world.CreateItem(ItemTypes(k_Cup), b2Vec2(-5 + i*15, 0), b2Vec2(3, 7));
+    b2Vec2 dispenser_position = b2Vec2(-15 + 15*i, -5);
+    // Create 4 buttons with 4 different emit rates
+    for (int j = 0; j < 4; j++)
+    {
+      b2ParticleColor liquid_color = colors[i];
+      sf::Color button_color = (j > 0) ?
+        sf::Color(255 - (j/3.0f)*abs(255 - liquid_color.r),
+                  255 - (j/3.0f)*abs(255 - liquid_color.g),
+                  255 - (j/3.0f)*abs(255 - liquid_color.b)) :
+        sf::Color(160, 160, 160, 255);
+      b2Vec2 button_position = dispenser_position + b2Vec2(0, -2.1*j);
+      auto new_emit_rate = j*std::pow(8, j);
+      world.CreateDispenserButton(i, button_position, new_emit_rate, button_color);
+    }
+    world.CreateDispenser(Juice(colors[i]), dispenser_position);
+    // Create cup under dispenser
+    world.CreateItem(ItemTypes(k_Cup), b2Vec2(-17 + 15*i, 0), b2Vec2(3, 7));
   }
 
-  world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, -15), b2Vec2(10, 3));
-  world.CreateItem(ItemTypes(k_Box), b2Vec2(-25, -20), b2Vec2(6, 3));
+  // Create a sponge and a little shelf for it
+  world.CreateItem(ItemTypes(k_Surface), b2Vec2(-35, -20), b2Vec2(10, 1));
+  world.CreateItem(ItemTypes(k_Box), b2Vec2(-33, -25), b2Vec2(6, 3));
 
   world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, 15), b2Vec2(60, 3));
 
