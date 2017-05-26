@@ -3,6 +3,7 @@
 #include <Box2D/Box2D.h>
 #include "Adapter.hpp"
 #include "EventHandler.hpp"
+#include "GameEntity.hpp"
 
 
 #include <iostream>
@@ -31,17 +32,29 @@ class DestructionListener : public b2DestructionListener
 class QueryCallback : public b2QueryCallback
 {
   public:
-    QueryCallback(const b2Vec2& point, const int& match_flags)
-      : point_(point),
-        match_flags_(match_flags),
-        waldo_(nullptr)
+    // Construct a callback object where Box2D can store
+    // a fixture pointer to the fixture that is at point and
+    // its body matches the given entity type
+    QueryCallback(const b2Vec2& point, const EntityTypes& match_flags)
+      : waldo_(nullptr),
+        point_(point),
+        match_flags_(match_flags)
     {
     }
+
+    // Predicate deciding whether the fixture given as
+    // parameter is Waldo or not.
     virtual bool ReportFixture(b2Fixture* fixture);
+
+    // After the query, this pointer will point to the fixture which
+    // matched the query, else it is NULL.
     b2Fixture* waldo_;
-    const b2Vec2& point_;
+
   private:
-    bool IsWaldoType(const int* flag) const;
-    const int match_flags_;
+    // Predicate for comparing if the entity flag given as parameter
+    // matches the flags of objects which might be Waldo.
+    bool IsWaldoType(const EntityTypes& flag) const;
+    const b2Vec2& point_;
+    const EntityTypes match_flags_;
 };
 #endif // WORLDCALLBACKS.HPP
