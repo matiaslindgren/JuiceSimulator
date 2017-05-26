@@ -45,7 +45,8 @@ class World : public b2World
                               const float& density,
                               const float& particle_radius);
 
-    b2Body* ground_body_;
+    void CreateMouseJoint(b2Body* body, const b2Vec2& target);
+    void DestroyMouseJoint();
 
   private:
     DebugDraw* debug_draw_;
