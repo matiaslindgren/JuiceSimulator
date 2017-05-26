@@ -5,11 +5,12 @@
 #include "DebugDraw.hpp"
 #include "World.hpp"
 
-
 class EventHandler
 {
   public:
-    EventHandler();
+    EventHandler()
+    {
+    }
     void HandleEvents(sf::RenderWindow& event_window,
                       DebugDraw* debug_draw,
                       World& world);
@@ -18,9 +19,6 @@ class EventHandler
                          DebugDraw* debug_draw);
     void HandleLeftButtonPress(const b2Vec2& mouse_position,
                                World& world);
-    b2MouseJoint* mouse_joint_;
-  private:
-    bool left_mouse_is_down_;
 };
 
 #endif // EVENTHANDLER_HPP

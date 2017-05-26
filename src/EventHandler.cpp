@@ -2,12 +2,7 @@
 #include "EventHandler.hpp"
 #include "WorldCallbacks.hpp"
 #include "Items.hpp"
-
-
-EventHandler::EventHandler()
-  : mouse_joint_(nullptr)
-{
-}
+#include "GameEntity.hpp"
 
 
 void EventHandler::HandleDebugDraw(sf::RenderWindow& event_window,
@@ -23,6 +18,7 @@ void EventHandler::HandleDebugDraw(sf::RenderWindow& event_window,
   }
   else if (event.type == sf::Event::MouseMoved)
   {
+    assert(debug_draw);
     const sf::Vector2f& mouse_position = event_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y));
     debug_draw->set_mouse_coordinates(mouse_position);
   }
@@ -58,42 +54,39 @@ void EventHandler::HandleLeftButtonPress(const b2Vec2& mouse_position, World& wo
   aabb.lowerBound = mouse_position - delta;
   aabb.upperBound = mouse_position + delta;
 
-  b2Fixture* fixture_in_aabb;
-  {
-    QueryCallback callback(mouse_position, k_Movable);
-    world.QueryAABB(&callback, aabb);
-    fixture_in_aabb = callback.waldo_;
-  }
+  QueryCallback callback(mouse_position, k_Movable);
+  world.QueryAABB(&callback, aabb);
+  b2Fixture* fixture_in_aabb = callback.waldo_;
 
-  if (fixture_in_aabb && !mouse_joint_)
+  if (fixture_in_aabb && !world.mouse_joint_)
   { // User wants to begin moving around something that is movable
     b2Body* body = fixture_in_aabb->GetBody();
     assert(body);
-    b2MouseJointDef mouse_joint_def;
-    mouse_joint_def.bodyA = world.ground_body_;
-    mouse_joint_def.bodyB = body;
-    mouse_joint_def.target = mouse_position;
-    mouse_joint_def.maxForce = 1000.0f * body->GetMass();
-    mouse_joint_ = static_cast<b2MouseJoint*>(world.CreateJoint(&mouse_joint_def));
-    mouse_joint_->SetUserData(this);
-    body->SetAwake(true);
+    if (body)
+    {
+      world.CreateMouseJoint(body, mouse_position);
+    }
   }
-  else if (mouse_joint_)
+  else if (world.mouse_joint_)
   { // User is moving around something that is movable
-    mouse_joint_->SetTarget(mouse_position);
+    world.mouse_joint_->SetTarget(mouse_position);
   }
   else
   { // Check for buttons
-    QueryCallback callback(mouse_position, k_Button);
+    QueryCallback callback(mouse_position, k_Clickable);
     world.QueryAABB(&callback, aabb);
-    fixture_in_aabb = callback.waldo_;
+    b2Fixture* fixture_in_aabb = callback.waldo_;
     if (fixture_in_aabb)
     { // User pressed a button
-      void* fixture_user_data = fixture_in_aabb->GetUserData();
-      if (fixture_user_data)
+      b2Body* body = fixture_in_aabb->GetBody();
+      if (body)
       {
-        Button* button = static_cast<Button*>(fixture_user_data);
-        button->toggle_();
+        void* body_data = body->GetUserData();
+        if (body_data)
+        {
+          GameEntity* game_entity = static_cast<GameEntity*>(body_data);
+          game_entity->Click();
+        }
       }
     }
   }
@@ -119,13 +112,11 @@ void EventHandler::HandleEvents(sf::RenderWindow& event_window,
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       const sf::Vector2f& mouse_position = event_window.mapPixelToCoords(sf::Mouse::getPosition(event_window));
-      /* std::cout << "pressed button at "  << mouse_position.x << ", " << mouse_position.y << std::endl; */
       HandleLeftButtonPress(ConvertVector(mouse_position), world);
     }
-    else if (mouse_joint_)
+    else if (world.mouse_joint_)
     { // The player let go of something that was being moved
-      world.DestroyJoint(mouse_joint_);
-      mouse_joint_ = nullptr;
+      world.DestroyMouseJoint();
     }
   }
 }
