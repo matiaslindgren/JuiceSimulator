@@ -1,4 +1,7 @@
+#include "GameItem.hpp"
 #include "Items.hpp"
+#include "Adapter.hpp"
+
 
 void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size)
 {
@@ -55,10 +58,36 @@ void CreateCup(b2Body* body, const b2Vec2& position, const b2Vec2& size)
     fixture_def.density = 0.4f;
     fixture_def.restitution = 0.5f;
     b2Fixture* fixture = body->CreateFixture(&fixture_def);
-    fixture->SetUserData(new Polygon(fixture_vertices[i], 4, sf::Color(50, 50, 250, 150)));
+    fixture->SetUserData(new GameItem(fixture_vertices[i], 4, sf::Quads, sf::Color(40, 40, 40, 100)));
   }
 }
 
+void CreateSurface(b2Body* body, const b2Vec2& position, const b2Vec2& size)
+{
+  const float& width = size.x;
+  const float& height = size.y;
+
+  b2Vec2 vertices[] = {
+    b2Vec2(0, 0),
+    b2Vec2(width, 0),
+    b2Vec2(width, height),
+    b2Vec2(0, height)
+  };
+
+  for (auto i = 0; i < 4; i++)
+  {
+    vertices[i] += position;
+    vertices[i].y *= -1;
+  }
+
+  b2PolygonShape shape;
+  shape.Set(vertices, 4);
+
+  b2FixtureDef fixture_def;
+  fixture_def.shape = &shape;
+  b2Fixture* fixture = body->CreateFixture(&fixture_def);
+  fixture->SetUserData(new GameItem(vertices, 4, sf::Quads, sf::Color(200, 200, 200, 150)));
+}
 
 void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size)
 {
