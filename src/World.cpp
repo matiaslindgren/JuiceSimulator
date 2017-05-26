@@ -31,7 +31,6 @@ World::World(const float& gravity_x,
 
 World::~World()
 {
-
   for (b2Body* body = b2World::GetBodyList();
        body;
        body = body->GetNext())
@@ -54,7 +53,6 @@ World::~World()
       body->SetUserData(nullptr);
     }
   }
-
 }
 
 void World::CreateMouseJoint(b2Body* body, const b2Vec2& target)
@@ -76,11 +74,8 @@ void World::DestroyMouseJoint()
   {
     void* mouse_state = mouse_joint_->GetUserData();
     assert(mouse_state);
-    if (mouse_state)
-    {
-      delete static_cast<MouseJointState*>(mouse_state);
-      mouse_joint_->SetUserData(nullptr);
-    }
+    delete static_cast<MouseJointState*>(mouse_state);
+    mouse_joint_->SetUserData(nullptr);
     b2World::DestroyJoint(mouse_joint_);
   }
   mouse_joint_ = nullptr;
@@ -96,20 +91,17 @@ void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position, const
       body_def.type = b2_dynamicBody;
       body = this->CreateBody(&body_def);
       body->SetUserData(new MovableEntity());
-      assert(body);
       CreateCup(body, position, size);
       break;
     case k_Surface:
       body_def.type = b2_staticBody;
       body = this->CreateBody(&body_def);
-      assert(body);
       body->SetUserData(new GameEntity());
       CreateSurface(body, position, size);
       break;
     case k_Box:
       body_def.type = b2_dynamicBody;
       body = this->CreateBody(&body_def);
-      assert(body);
       body->SetUserData(new MovableEntity());
       CreateBox(body, position, size);
       break;
@@ -173,7 +165,7 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
 
 void World::CreateDispenserButton(const unsigned int& dispenser_index, const b2Vec2& position, const unsigned int& emit_rate, const sf::Color& color)
 {
-  // Construct a closure for toggling on/off the dispenser
+  // Construct a closure for toggling the dispenser on/off
   auto& dispensers = this->dispensers_;
   std::function<void()> toggle_dispenser =
     [&dispensers, dispenser_index, emit_rate]()
@@ -247,12 +239,9 @@ void World::Step(const float&      time_step,
       {
         void* fixture_data = fixture->GetUserData();
         assert(fixture_data);
-        if (fixture_data)
-        {
-          GameItem* game_item = static_cast<GameItem*>(fixture_data);
-          game_item->ApplyTransform(body_transform);
-          game_item->Draw(render_target);
-        }
+        GameItem* game_item = static_cast<GameItem*>(fixture_data);
+        game_item->ApplyTransform(body_transform);
+        game_item->Draw(render_target);
       }
     }
     body = next_body;
