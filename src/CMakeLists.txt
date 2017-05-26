@@ -8,15 +8,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(SOURCES
   Adapter.cpp
-  Button.cpp
+  GameItem.cpp
   DebugDraw.cpp
   DebugLines.cpp
   EventHandler.cpp
   DrawableParticleSystem.cpp
-  DrawableDispenser.cpp
   Items.cpp
   Main.cpp
-  Polygon.cpp
   TextBox.cpp
   World.cpp
   WorldCallbacks.cpp
