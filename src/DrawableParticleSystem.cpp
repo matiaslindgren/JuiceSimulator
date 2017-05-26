@@ -3,15 +3,12 @@
 #include "Adapter.hpp"
 
 
-DrawableParticleSystem::DrawableParticleSystem(const float& particle_radius)
-  : particle_radius_(particle_radius),
-    vertices_(sf::TrianglesFan, k_TriangleFanSegments + 2)
+void DrawableParticleSystem::GenerateVertices(const float& particle_radius)
 {
   const auto& triangle_fan_increment = 2.0f * b2_pi / k_TriangleFanSegments;
-
   unit_particle_circle.resize(k_TriangleFanSegments + 2);
-  auto theta = 0.0f;
-  for (auto i = 0; i < k_TriangleFanSegments + 2; i++)
+  float theta = 0.0f;
+  for (unsigned int i = 0; i < k_TriangleFanSegments + 2; i++)
   {
     unit_particle_circle[i] = particle_radius*sf::Vector2f(cosf(theta), sinf(theta));
     theta += triangle_fan_increment;
@@ -28,7 +25,7 @@ void DrawableParticleSystem::Step(sf::RenderTarget& target, const b2ParticleSyst
   {
     const sf::Color& sfml_color = ConvertColor(colors[i]);
     const sf::Vector2f& sfml_center = ConvertVector(positions[i]);
-    for (auto j = 0; j < unit_particle_circle.size(); j++)
+    for (unsigned int j = 0; j < unit_particle_circle.size(); j++)
     {
       vertices_[j].position = sfml_center + unit_particle_circle[j];
       vertices_[j].color = sfml_color;

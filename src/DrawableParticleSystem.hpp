@@ -8,16 +8,15 @@ static constexpr auto k_TriangleFanSegments = 10;
 class DrawableParticleSystem
 {
   public:
-    DrawableParticleSystem(const float& radius);
-    void Step(sf::RenderTarget&, const b2ParticleSystem&);
-    const float& get_particle_radius() const
+    DrawableParticleSystem()
+      : vertices_(sf::TrianglesFan, k_TriangleFanSegments + 2)
     {
-      return particle_radius_;
     }
+    void GenerateVertices(const float& particle_radius);
+    void Step(sf::RenderTarget&, const b2ParticleSystem&);
   private:
     sf::VertexArray vertices_;
     std::vector<sf::Vector2f> unit_particle_circle;
-    const float particle_radius_;
 };
 
 
