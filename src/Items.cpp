@@ -107,26 +107,25 @@ void CreateBox(b2Body* body, const b2Vec2& position, const b2Vec2& size)
     vertices[i].y *= -1;
   }
 
-  {
-    b2PolygonShape shape;
-    shape.Set(vertices, 4);
+  b2PolygonShape shape;
+  shape.Set(vertices, 4);
 
-    b2FixtureDef fixture_def;
-    fixture_def.shape = &shape;
-    if (body->GetType() == b2_dynamicBody)
-    {
-      // Boxes should appear heavy with great inertia
-      fixture_def.density = 2.0f;
-      fixture_def.restitution = 0.15f;
-    }
-    b2Fixture* fixture = body->CreateFixture(&fixture_def);
-    fixture->SetUserData(new Polygon(vertices, 4, sf::Color(150, 150, 150, 50)));
-  }
+  b2FixtureDef fixture_def;
+  fixture_def.shape = &shape;
+  // Boxes should appear heavy with great inertia
+  fixture_def.density = 2.0f;
+  fixture_def.restitution = 0.15f;
+  b2Fixture* fixture = body->CreateFixture(&fixture_def);
+  void* game_item = new GameItem(vertices, 4, sf::Quads, sf::Color(200, 200, 50, 80));
+  fixture->SetUserData(game_item);
 }
 
-void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& particle_radius, sf::Texture* texture)
+void CreateDispenserItem(b2Body* body,
+                         const b2Vec2& position,
+                         const float& particle_radius,
+                         const b2ParticleColor& color)
 {
-  const float& height = 35*particle_radius;
+  const float& height = 45*particle_radius;
   const float& width = 8*particle_radius;
 
   b2Vec2 nozzle_vertices[] = {
@@ -148,7 +147,7 @@ void CreateDispenserItem(b2Body* body, const b2Vec2& position, const float& part
   b2FixtureDef fixture_def;
   fixture_def.shape = &shape;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
-  fixture->SetUserData(new DrawableDispenser(nozzle_vertices, 4, texture));
+  fixture->SetUserData(new GameItem(nozzle_vertices, 4, sf::Quads, sf::Color(220, 220, 220, 155), render_states));
 }
 
 void CreateButton(b2Body* body,
@@ -164,7 +163,7 @@ void CreateButton(b2Body* body,
   fixture_def.shape = &shape;
   fixture_def.isSensor = true;
   b2Fixture* fixture = body->CreateFixture(&fixture_def);
-  fixture->SetUserData(new Button(position, radius, toggle));
+  fixture->SetUserData(new GameItem(vertices, k_VertexCount, sf::TrianglesFan, color, render_states));
 }
 
 
