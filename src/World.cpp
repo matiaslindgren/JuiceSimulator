@@ -143,20 +143,16 @@ void World::CreateParticleSystem(const float& gravity_scale,
 /*   particle_system->CreateParticleGroup(sponge); */
 /* } */
 
-void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position, sf::Texture* texture)
+void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position)
 {
-  b2ParticleSystem* particle_system = GetParticleSystemList();
+  b2ParticleSystem* particle_system = b2World::GetParticleSystemList();
   assert(particle_system);
 
-  auto dispenser_id = dispensers_.size();
   dispensers_.emplace_back();
   RadialEmitter& dispenser = dispensers_.back();
 
-  b2ParticleGroup* group = particle_system->CreateParticleGroup(liquid_definition);
-
   auto particle_radius = particle_system->GetRadius();
   dispenser.SetParticleSystem(particle_system);
-  dispenser.SetGroup(group);
   dispenser.SetColor(liquid_definition.color);
   dispenser.SetParticleFlags(liquid_definition.flags);
   dispenser.SetPosition(b2Vec2(position.x, -position.y));
@@ -169,9 +165,7 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   std::function<void()> ToggleDispenserCallback =
     [&dispensers, dispenser_id]()
     {
-      std::cout << "toggled " << dispenser_id << " " << &dispensers[dispenser_id] << std::endl;
-      dispensers[dispenser_id].SetEmitRate((dispensers[dispenser_id].GetEmitRate() < 1) ? 60 : 0);
-      std::cout << "has emit rate " << dispensers[dispenser_id].GetEmitRate() << std::endl;
+      dispensers[dispenser_index].SetEmitRate(emit_rate);
     };
 
   b2BodyDef body_def;
@@ -183,7 +177,6 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   CreateDispenserItem(body, position, particle_radius, texture);
   CreateButton(body, position, 1, ToggleDispenserCallback);
 }
-
 
 void World::Step(const float&      time_step,
                  const int&        velocity_iterations,
@@ -204,77 +197,52 @@ void World::Step(const float&      time_step,
 
   // Draw all particle systems, while removing all particles which are
   // outside the screen
-  b2ParticleSystem* particle_system = GetParticleSystemList();
-  while (particle_system)
+  for (b2ParticleSystem* particle_system = GetParticleSystemList();
+       particle_system;
+       particle_system = particle_system->GetNext())
   {
-    b2ParticleSystem* next_particle_system = particle_system->GetNext();
-    for (auto& drawable_liquid : drawable_liquids_)
-    {
-      if (particle_system->GetRadius() == drawable_liquid.get_particle_radius())
-      {
-        drawable_liquid.Step(render_target, *particle_system);
-        break;
-      }
-    }
+    drawable_particle_system_.Step(render_target, *particle_system);
     DestroyOutOfBoundsParticles(*particle_system);
-    particle_system = next_particle_system;
   }
 
   // Draw all other shapes, while removing all shapes which are
   // outside the screen
   b2Body* body = b2World::GetBodyList();
-
   while (body)
   {
     b2Body* next_body = body->GetNext();
     const b2Vec2& body_position = body->GetWorldCenter();
-    if (PositionOutOfBounds(body_position))
-    {
-      DestroyBody(body);
-      body = next_body;
-      continue;
-    }
+    if (PositionOutOfBounds(body_position) &&
+        !(mouse_joint_ &&
+          (mouse_joint_->GetBodyA() == body ||
+           mouse_joint_->GetBodyB() == body)))
+      { // This body is outside the screen and nobody is holding on to it
+        // with their mouse, so we can destroy the body.
+        if (void* body_data = body->GetUserData())
+          delete static_cast<GameEntity*>(body_data);
+        body->SetUserData(nullptr);
+        b2World::DestroyBody(body);
+        body = next_body;
+        continue;
+      }
 
     const b2Transform& body_transform = body->GetTransform();
 
-    b2Fixture* fixture = body->GetFixtureList();
-    while (fixture)
+    for (b2Fixture* fixture = body->GetFixtureList();
+         fixture;
+         fixture = fixture->GetNext())
     {
-      b2Fixture* next_fixture = fixture->GetNext();
-      /* void* user_data = fixture->GetUserData(); */
-      /* sf::Drawable* polygon = static_cast<sf::Drawable*>(user_data); */
       if (!disable_sfml_graphics)
       {
-        switch (fixture->GetType())
+        void* fixture_data = fixture->GetUserData();
+        assert(fixture_data);
+        if (fixture_data)
         {
-          case b2Shape::e_polygon:
-            {
-              // From Box2D/Dynamics/b2World.cpp
-              b2PolygonShape* poly = static_cast<b2PolygonShape*>(fixture->GetShape());
-              auto vertexCount = poly->m_count;
-              sf::VertexArray vertices(sf::TrianglesFan, vertexCount);
-              for (auto i = 0; i < vertexCount; ++i)
-              {
-                const b2Vec2& new_position = b2Mul(body_transform, poly->m_vertices[i]);
-                vertices[i].position.x = new_position.x;
-                vertices[i].position.y = -new_position.y;
-                vertices[i].color = sf::Color::Blue;
-              }
-              render_target.draw(vertices);
-            }
-            break;
-          case b2Shape::e_chain:
-            {
-
-              sf::Drawable* dispenser = static_cast<sf::Drawable*>(fixture->GetUserData());
-              render_target.draw(*dispenser);
-            }
-            break;
-          default:
-            break;
+          GameItem* game_item = static_cast<GameItem*>(fixture_data);
+          game_item->ApplyTransform(body_transform);
+          game_item->Draw(render_target);
         }
       }
-      fixture = next_fixture;
     }
     body = next_body;
   }
@@ -309,6 +277,7 @@ void World::DrawDebugData(const unsigned int& fps)
 void World::DestroyOutOfBoundsParticles(b2ParticleSystem& particle_system)
 {
   const b2Vec2* particle_positions = particle_system.GetPositionBuffer();
+  assert(particle_positions);
   const auto particle_count = particle_system.GetParticleCount();
   for (auto i = 0; i < particle_count; i++)
   {
