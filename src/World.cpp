@@ -124,24 +124,24 @@ void World::CreateParticleSystem(const float& gravity_scale,
 {
   const b2ParticleSystemDef particle_system_def;
   b2ParticleSystem* particle_system = b2World::CreateParticleSystem(&particle_system_def);
+  assert(particle_system);
   particle_system->SetGravityScale(gravity_scale);
   particle_system->SetDensity(density);
   particle_system->SetRadius(particle_radius);
-  drawable_liquids_.emplace_back(particle_system->GetRadius());
 }
 
-void World::CreateSponge(const b2Vec2& position, const b2Vec2& size)
-{
-  b2ParticleSystem* particle_system = GetParticleSystemList();
-  assert(particle_system);
+/* void World::CreateSponge(const b2Vec2& position, const b2Vec2& size) */
+/* { */
+/*   b2ParticleSystem* particle_system = GetParticleSystemList(); */
+/*   assert(particle_system); */
 
-  b2PolygonShape shape;
-  shape.SetAsBox(size.x, size.y);
-  Sponge sponge;
-  sponge.position.Set(position.x, -position.y);
-  sponge.shape = &shape;
-  particle_system->CreateParticleGroup(sponge);
-}
+/*   b2PolygonShape shape; */
+/*   shape.SetAsBox(size.x, size.y); */
+/*   Sponge sponge; */
+/*   sponge.position.Set(position.x, -position.y); */
+/*   sponge.shape = &shape; */
+/*   particle_system->CreateParticleGroup(sponge); */
+/* } */
 
 void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2Vec2& position, sf::Texture* texture)
 {
