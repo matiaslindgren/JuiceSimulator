@@ -60,21 +60,7 @@ int main(int argc, char** argv)
   sf::ContextSettings settings;
   settings.antialiasingLevel = kAntialiasinglevel;
 
-  bool found_valid_video_mode = false;
-  for (auto& video_mode : sf::VideoMode::getFullscreenModes())
-  {
-    if (video_mode.isValid())
-    {
-      found_valid_video_mode = true;
-      window.create(video_mode, "splash splosh", sf::Style::Fullscreen, settings);
-      break;
-    }
-  }
-  if (!found_valid_video_mode)
-  {
-    std::cerr << "Could not find valid video mode for full screen" << std::endl;
-    window.create(sf::VideoMode(), "splash splosh", sf::Style::Default, settings);
-  }
+  window.create(sf::VideoMode(800, 600), "Juice Simulator", sf::Style::Default, settings);
 
   window.setFramerateLimit(kFps);
 
