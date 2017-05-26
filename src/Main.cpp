@@ -12,7 +12,8 @@
 #include "LiquidDefinitions.hpp"
 
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
   bool disable_rendering;
   bool enable_physics_debug;
   bool disable_sfml_graphics;
@@ -49,9 +50,10 @@ int main(int argc, char** argv) {
 
   static constexpr auto kFps = 60;
   static constexpr auto k_ViewScale = 0.1f;
-  static constexpr auto kAntialiasinglevel = 4;
-  static constexpr auto kParticleGravityScale = 1.0f;
-  static constexpr auto kParticleDensity = 1.0f;
+  static constexpr auto kAntialiasinglevel = 2;
+
+  static constexpr auto kParticleGravityScale = 6.0f;
+  static constexpr auto kParticleDensity = 0.4f;
   static constexpr auto kParticleRadius = 0.3f;
 
   sf::RenderWindow window;
@@ -146,6 +148,7 @@ int main(int argc, char** argv) {
   world.CreateItem(ItemTypes(k_Surface), b2Vec2(-35, -20), b2Vec2(10, 1));
   world.CreateItem(ItemTypes(k_Box), b2Vec2(-33, -25), b2Vec2(6, 3));
 
+  // Create the counter
   world.CreateItem(ItemTypes(k_Surface), b2Vec2(-30, 15), b2Vec2(60, 3));
 
   constexpr auto k_TimeStep = 1.0f / 60.0f;
@@ -153,6 +156,7 @@ int main(int argc, char** argv) {
   constexpr auto k_PositionIterations = 3;
   constexpr auto k_ParticleIterations = 3;
 
+  // Track time for counting frames per second
   sf::Clock clock;
   int last_time = 0;
   unsigned int drawnFrames = 0;
@@ -166,6 +170,7 @@ int main(int argc, char** argv) {
 
     window.clear(sf::Color::White);
 
+    // Advance the whole world by one time step
     world.Step(k_TimeStep, k_VelocityIterations,
                k_PositionIterations, k_ParticleIterations,
                window, disable_sfml_graphics);
