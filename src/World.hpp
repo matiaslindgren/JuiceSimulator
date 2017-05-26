@@ -49,10 +49,13 @@ class World : public b2World
     void DestroyMouseJoint();
 
   private:
+    friend class EventHandler;
+
     DebugDraw* debug_draw_;
+    b2Body* ground_body_;
+    b2MouseJoint* mouse_joint_;
+    DrawableParticleSystem drawable_particle_system_;
     std::vector<RadialEmitter> dispensers_;
-    int enabled_dispensers_;
-    std::vector<DrawableParticleSystem> drawable_liquids_;
     const int north_edge_;
     const int east_edge_;
     const int south_edge_;
