@@ -4,6 +4,10 @@
 #include <Box2D/Box2D.h>
 #include "DebugDraw.hpp"
 #include "World.hpp"
+#include "MovableEntity.hpp"
+#include "ClickableEntity.hpp"
+#include "GameItem.hpp"
+#include "MouseJointState.hpp"
 
 
 World::World(const float& gravity_x,
@@ -13,6 +17,8 @@ World::World(const float& gravity_x,
              const int& south_edge,
              const int& west_edge)
   : b2World(b2Vec2(gravity_x, -gravity_y)),
+    ground_body_(nullptr),
+    mouse_joint_(nullptr),
     north_edge_(north_edge),
     east_edge_(east_edge),
     south_edge_(south_edge),
@@ -20,59 +26,91 @@ World::World(const float& gravity_x,
 {
   b2BodyDef body_def;
   ground_body_ = this->CreateBody(&body_def);
+  ground_body_->SetUserData(nullptr);
 }
 
 World::~World()
 {
-  b2Body* body = b2World::GetBodyList();
-  while (body)
+
+  for (b2Body* body = b2World::GetBodyList();
+       body;
+       body = body->GetNext())
   {
-    b2Body* next_body = body->GetNext();
-    b2Fixture* fixture = body->GetFixtureList();
-    while (fixture)
+    for (b2Fixture* fixture = body->GetFixtureList();
+         fixture;
+         fixture = fixture->GetNext())
     {
-      b2Fixture* next_fixture = fixture->GetNext();
-      void* user_data = fixture->GetUserData();
-      if (user_data)
+      void* game_item = fixture->GetUserData();
+      if (game_item)
       {
-        delete static_cast<sf::Drawable*>(fixture->GetUserData());
+        delete static_cast<GameItem*>(game_item);
         fixture->SetUserData(nullptr);
       }
-      fixture = next_fixture;
     }
-    void* user_data = body->GetUserData();
-    if (user_data)
+    void* game_entity = body->GetUserData();
+    if (game_entity)
     {
-      delete static_cast<ItemTypes*>(body->GetUserData());
+      delete static_cast<GameEntity*>(game_entity);
       body->SetUserData(nullptr);
     }
-    body = next_body;
   }
-  ground_body_ = nullptr;
+
+}
+
+void World::CreateMouseJoint(b2Body* body, const b2Vec2& target)
+{
+  b2MouseJointDef mouse_joint_def;
+  mouse_joint_def.bodyA = ground_body_;
+  mouse_joint_def.bodyB = body;
+  mouse_joint_def.target = target;
+  mouse_joint_def.maxForce = 1000.0f * body->GetMass();
+  mouse_joint_ = static_cast<b2MouseJoint*>(CreateJoint(&mouse_joint_def));
+  assert(mouse_joint_);
+  mouse_joint_->SetUserData(new MouseJointState());
+  body->SetAwake(true);
+}
+
+void World::DestroyMouseJoint()
+{
+  if (mouse_joint_)
+  {
+    void* mouse_state = mouse_joint_->GetUserData();
+    assert(mouse_state);
+    if (mouse_state)
+    {
+      delete static_cast<MouseJointState*>(mouse_state);
+      mouse_joint_->SetUserData(nullptr);
+    }
+    b2World::DestroyJoint(mouse_joint_);
+  }
+  mouse_joint_ = nullptr;
 }
 
 void World::CreateItem(const ItemTypes& item_type, const b2Vec2& position, const b2Vec2& size)
 {
   b2BodyDef body_def;
-  b2Body* body = nullptr;
+  b2Body* body;
   switch (item_type)
   {
     case k_Cup:
       body_def.type = b2_dynamicBody;
       body = this->CreateBody(&body_def);
-      body->SetUserData(new ItemTypes(k_Cup));
+      body->SetUserData(new MovableEntity());
+      assert(body);
       CreateCup(body, position, size);
       break;
     case k_Surface:
       body_def.type = b2_staticBody;
       body = this->CreateBody(&body_def);
-      body->SetUserData(new ItemTypes(k_Surface));
-      CreateBox(body, position, size);
+      assert(body);
+      body->SetUserData(new GameEntity());
+      CreateSurface(body, position, size);
       break;
     case k_Box:
       body_def.type = b2_dynamicBody;
       body = this->CreateBody(&body_def);
-      body->SetUserData(new ItemTypes(k_Box));
+      assert(body);
+      body->SetUserData(new MovableEntity());
       CreateBox(body, position, size);
       break;
     default:
