@@ -159,11 +159,24 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   dispenser.SetSize(b2Vec2(2.1*particle_radius, 5));
   dispenser.SetSpeed(0);
   dispenser.SetVelocity(b2Vec2(0, -80));
-  dispenser.SetEmitRate(100);
+  dispenser.SetEmitRate(0);
 
+  b2BodyDef body_def;
+  body_def.type = b2_staticBody;
+
+  b2Body* body = this->CreateBody(&body_def);
+  body->SetUserData(new GameEntity());
+
+  CreateDispenserItem(body, position, particle_radius, liquid_definition.color);
+  drawable_particle_system_.GenerateVertices(particle_radius);
+}
+
+void World::CreateDispenserButton(const unsigned int& dispenser_index, const b2Vec2& position, const unsigned int& emit_rate, const sf::Color& color)
+{
+  // Construct a closure for toggling on/off the dispenser
   auto& dispensers = this->dispensers_;
-  std::function<void()> ToggleDispenserCallback =
-    [&dispensers, dispenser_id]()
+  std::function<void()> toggle_dispenser =
+    [&dispensers, dispenser_index, emit_rate]()
     {
       dispensers[dispenser_index].SetEmitRate(emit_rate);
     };
@@ -172,10 +185,8 @@ void World::CreateDispenser(const ParticleGroupDef& liquid_definition, const b2V
   body_def.type = b2_staticBody;
 
   b2Body* body = this->CreateBody(&body_def);
-  body->SetUserData(new ItemTypes(k_Button));
-
-  CreateDispenserItem(body, position, particle_radius, texture);
-  CreateButton(body, position, 1, ToggleDispenserCallback);
+  body->SetUserData(new ClickableEntity(toggle_dispenser));
+  CreateButton(body, position, 0.8, color);
 }
 
 void World::Step(const float&      time_step,
