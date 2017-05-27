@@ -61,8 +61,8 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertex_count, con
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
-	constexpr float k_segments = 16.0f;
-	constexpr float k_increment = 2.0f * b2_pi / k_segments;
+  constexpr float k_segments = 16.0f;
+  constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
   sf::VertexArray sfml_vertices(sf::LinesStrip, k_segments+1);
   const sf::Color& sfml_color = ConvertColor(color);
@@ -82,8 +82,8 @@ float smoothstep(float x) { return x * x * (3 - 2 * x); }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-	constexpr float k_segments = 16.0f;
-	constexpr float k_increment = 2.0f * b2_pi / k_segments;
+  constexpr float k_segments = 16.0f;
+  constexpr float k_increment = 2.0f * b2_pi / k_segments;
   float theta = 0.0f;
   sf::VertexArray sfml_vertices(sf::TrianglesFan, k_segments+2);
   const sf::Color& sfml_color = ConvertColor(color);
