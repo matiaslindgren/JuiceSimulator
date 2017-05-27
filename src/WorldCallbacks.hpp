@@ -6,7 +6,6 @@
 #include "GameEntity.hpp"
 
 
-#include <iostream>
 // Destruction listener for deleting the Polygon object assigned
 // to every userData pointer in bodies
 class DestructionListener : public b2DestructionListener

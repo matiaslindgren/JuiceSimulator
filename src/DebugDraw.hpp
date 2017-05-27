@@ -82,8 +82,5 @@ class DebugDraw : public b2Draw
 
 };
 
-float ComputeFPS();
-
-void LoadOrtho2DMatrix(double left, double right, double bottom, double top);
 
 #endif

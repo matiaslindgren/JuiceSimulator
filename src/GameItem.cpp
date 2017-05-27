@@ -1,6 +1,5 @@
 #include "Adapter.hpp"
 #include "GameItem.hpp"
-#include <iostream>
 
 
 GameItem::GameItem(const b2Vec2 b2_vertices[],

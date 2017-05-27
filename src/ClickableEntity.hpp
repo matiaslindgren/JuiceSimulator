@@ -2,7 +2,6 @@
 #define CLICKABLEENTITY_HPP
 #include "GameEntity.hpp"
 #include "World.hpp"
-#include <iostream>
 
 class ClickableEntity : public GameEntity
 {

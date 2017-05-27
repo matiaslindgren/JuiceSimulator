@@ -3,10 +3,6 @@
 #include <Box2D/Box2D.h>
 #include "World.hpp"
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
 enum EntityTypes
 {
   k_Default = 1,

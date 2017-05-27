@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <tclap/CmdLine.h>
-#include "Adapter.hpp"
 #include "DebugDraw.hpp"
 #include "EventHandler.hpp"
 #include "World.hpp"
@@ -20,7 +19,7 @@ int main(int argc, char** argv)
   unsigned int game_loop_limit;
   try
   {
-    TCLAP::CmdLine cmd("a game - work in progress", ' ', "0.1");
+    TCLAP::CmdLine cmd("Juice Simulator", ' ', "1.0");
     TCLAP::SwitchArg render_switch(
         "r", "no-rendering", "Disable all rendering.",
         cmd, false);
@@ -48,21 +47,21 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  static constexpr auto kFps = 60;
+  static constexpr auto k_Fps = 60;
   static constexpr auto k_ViewScale = 0.1f;
-  static constexpr auto kAntialiasinglevel = 2;
+  static constexpr auto k_Antialiasinglevel = 2;
 
-  static constexpr auto kParticleGravityScale = 6.0f;
-  static constexpr auto kParticleDensity = 0.4f;
-  static constexpr auto kParticleRadius = 0.3f;
+  static constexpr auto k_ParticleGravityScale = 6.0f;
+  static constexpr auto k_ParticleDensity = 0.4f;
+  static constexpr auto k_ParticleRadius = 0.3f;
 
   sf::RenderWindow window;
   sf::ContextSettings settings;
-  settings.antialiasingLevel = kAntialiasinglevel;
+  settings.antialiasingLevel = k_Antialiasinglevel;
 
   window.create(sf::VideoMode(800, 600), "Juice Simulator", sf::Style::Default, settings);
 
-  window.setFramerateLimit(kFps);
+  window.setFramerateLimit(k_Fps);
 
   const sf::Vector2u& window_size = window.getSize();
   const sf::Vector2f& view_size = sf::Vector2f(k_ViewScale*window_size.x, k_ViewScale*window_size.y);
@@ -92,16 +91,9 @@ int main(int argc, char** argv)
     world.set_debug_draw(&debug_draw);
   }
 
-  sf::Texture dispenser_texture;
-  if (!dispenser_texture.loadFromFile("media/img/dispenser.jpg"))
-  {
-    std::cerr << "Loading dispenser texture failed" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  world.CreateParticleSystem(kParticleGravityScale,
-                             kParticleDensity,
-                             kParticleRadius);
+  world.CreateParticleSystem(k_ParticleGravityScale,
+                             k_ParticleDensity,
+                             k_ParticleRadius);
   b2ParticleColor colors[] = {
     b2ParticleColor(250, 20, 20, 50),
     b2ParticleColor(20, 250, 20, 50),
@@ -116,6 +108,9 @@ int main(int argc, char** argv)
     for (int j = 0; j < 4; j++)
     {
       b2ParticleColor liquid_color = colors[i];
+      // Set the button color saturation linearly related
+      // to the level of intensity of emitted liquid when the
+      // button is pressed
       sf::Color button_color = (j > 0) ?
         sf::Color(255 - (j/3.0f)*abs(255 - liquid_color.r),
                   255 - (j/3.0f)*abs(255 - liquid_color.g),
