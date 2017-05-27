@@ -9,5 +9,6 @@ Requirements
 ------------
 * [LiquidFun](https://github.com/google/liquidfun)
 * [SFML](https://github.com/SFML/SFML)
+* [TCLAP](http://tclap.sourceforge.net)
 * Nothing better to do
 
