@@ -12,7 +12,8 @@ Requirements
 * [TCLAP](http://tclap.sourceforge.net)
 * Nothing better to do
 
-Requirements
+TODO
 ------------
 
-Rewrite rendering backend with OpenGL ES 2.0 and compile to WASM.
+* Rewrite rendering backend with OpenGL ES 2.0 and compile to WASM.
+* Add audio
