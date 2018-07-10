@@ -12,3 +12,7 @@ Requirements
 * [TCLAP](http://tclap.sourceforge.net)
 * Nothing better to do
 
+Requirements
+------------
+
+Rewrite rendering backend with OpenGL ES 2.0 and compile to WASM.
