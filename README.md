@@ -15,5 +15,6 @@ Requirements
 TODO
 ------------
 
-* Rewrite rendering backend with OpenGL ES 2.0 and compile to WASM.
+* Rewrite rendering backend with OpenGL ES 2.0 and compile to WASM
+* Investigate how much SIMD support WASM offers and optimize accordingly
 * Add audio
